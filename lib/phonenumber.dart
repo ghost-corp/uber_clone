@@ -5,6 +5,7 @@ class PhoneNumber extends StatefulWidget {
   _PhoneNumberState createState() => _PhoneNumberState();
 }
 
+TextEditingController phoneController = TextEditingController(text: "08027278021");
 class _PhoneNumberState extends State<PhoneNumber> {
   @override
   Widget build(BuildContext context) {
@@ -40,7 +41,7 @@ class _PhoneNumberState extends State<PhoneNumber> {
                           padding: EdgeInsets.only(left: 20, top: 12),
                           child: Text('Please enter your mobile number',
                             style: TextStyle(
-                              fontSize: 18,
+                              fontSize: MediaQuery.of(context).size.width*0.055,
                             ),
                           ),
                         ),
@@ -68,9 +69,8 @@ class _PhoneNumberState extends State<PhoneNumber> {
                               Padding(
                                 padding: EdgeInsets.only(left: MediaQuery.of(context).size.width*0.025),
                                 child: GestureDetector(
-                                    onTap: ()
-                                    {
-                                      Navigator.push(context, MaterialPageRoute(builder: (context) => PhoneNumber()));
+                                    onTap: (){
+
                                     },
                                     child: Container(
                                       width: MediaQuery.of(context).size.width*0.6,
@@ -82,8 +82,9 @@ class _PhoneNumberState extends State<PhoneNumber> {
                                                 color: Colors.grey,
                                                 fontSize: MediaQuery.of(context).size.width*0.046
                                             ),
-                                            hintText: '09012345678'
+                                            hintText: '09012345678',
                                         ),
+                                        controller: phoneController,
                                       ),
                                     )
                                 ),
@@ -125,7 +126,7 @@ class _PhoneNumberState extends State<PhoneNumber> {
                         padding: EdgeInsets.all(10),
                         child: FloatingActionButton(
                           onPressed: (){
-
+                            Navigator.pushNamed(context, "phone_verification_page",arguments: phoneController.text);
                           },
                           child: Icon(
                               Icons.arrow_forward,
