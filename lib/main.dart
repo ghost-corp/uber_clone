@@ -40,31 +40,31 @@ class _MyHomePageState extends State<MyHomePage> {
               child:  Image.asset("images/welcomeIcon.jpg",fit: BoxFit.fill,),
             ),
             Padding(
-              padding: EdgeInsets.all(30),
+              padding: EdgeInsets.all( MediaQuery.of(context).size.width*0.07),
               child: Row(
                 children: <Widget>[
                   Padding(
                     padding: EdgeInsets.only(),
                     child: SizedBox(
-                      width: 30,
-                      height: 30,
+                      width: MediaQuery.of(context).size.width*0.07,
+                      height: MediaQuery.of(context).size.width*0.07,
                       child: Image.asset("images/nigeria.png"),
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.only(left: 20),
+                    padding: EdgeInsets.only(left: MediaQuery.of(context).size.width*0.05),
                     child: Text(
                       "+234",
                       style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.w400),
+                          TextStyle(fontSize: MediaQuery.of(context).size.width*0.05, fontWeight: FontWeight.w400),
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.only(left: 10),
+                    padding: EdgeInsets.only(left: MediaQuery.of(context).size.width*0.025),
                     child: Text(
                       "Enter your mobile number",
                       style: TextStyle(
-                          fontSize: 20,
+                          fontSize: MediaQuery.of(context).size.width*0.05,
                           fontWeight: FontWeight.w400,
                           color: Colors.grey),
                     ),
@@ -91,24 +91,24 @@ class _MyHomePageState extends State<MyHomePage> {
                 children: <Widget>[
                   Padding(
                     padding:
-                    EdgeInsets.only(left: 30, bottom: 30, right: 30),
+                    EdgeInsets.only(left: MediaQuery.of(context).size.width*0.07, bottom: MediaQuery.of(context).size.width*0.05, right: MediaQuery.of(context).size.width*0.07),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
                         Padding(
                           padding: EdgeInsets.only(),
                           child: SizedBox(
-                            width: 30,
-                            height: 30,
+                            width:  MediaQuery.of(context).size.width*0.07,
+                            height:  MediaQuery.of(context).size.width*0.07,
                             child: Image.asset("images/facebook.png"),
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsets.only(left: 20),
+                          padding: EdgeInsets.only(left:MediaQuery.of(context).size.width*0.05),
                           child: Text(
                             "Facebook",
                             style: TextStyle(
-                                fontSize: 13,
+                                fontSize:  MediaQuery.of(context).size.width*0.03,
                                 fontWeight: FontWeight.w400
                             ),
                           ),
@@ -118,31 +118,31 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   Padding(
                     padding:
-                    EdgeInsets.only(left: 30,bottom: 30, right: 30),
+                    EdgeInsets.only(left: MediaQuery.of(context).size.width*0.07,right: MediaQuery.of(context).size.width*0.07),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
                         Padding(
                           padding: EdgeInsets.only(),
                           child: SizedBox(
-                            width: 30,
-                            height: 30,
+                            width:  MediaQuery.of(context).size.width*0.07,
+                            height:  MediaQuery.of(context).size.width*0.07,
                             child: Image.asset("images/google.png"),
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsets.only(left: 20),
+                          padding: EdgeInsets.only(left:MediaQuery.of(context).size.width*0.05),
                           child: Text(
                             "Google",
                             style: TextStyle(
-                                fontSize: 13,
+                                fontSize:  MediaQuery.of(context).size.width*0.03,
                                 fontWeight: FontWeight.w400
                             ),
                           ),
                         ),
                       ],
                     ),
-                  )
+                  ),
                 ],
               ),
             )
