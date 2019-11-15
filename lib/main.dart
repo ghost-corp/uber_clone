@@ -41,7 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             SizedBox(
               width: MediaQuery.of(context).size.width,
-              height:  MediaQuery.of(context).size.height*0.65,
+              height:  MediaQuery.of(context).size.height*0.68,
               child:  Image.asset("images/welcomeIcon.jpg",fit: BoxFit.fill,),
             ),
             Padding(
