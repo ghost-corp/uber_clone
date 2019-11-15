@@ -125,7 +125,7 @@ class _PhoneNumberState extends State<PhoneNumber> {
                         padding: EdgeInsets.all(10),
                         child: FloatingActionButton(
                           onPressed: (){
-                            
+
                           },
                           child: Icon(
                               Icons.arrow_forward,
