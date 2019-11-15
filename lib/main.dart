@@ -34,12 +34,10 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            Container(
-              child: Align(
-                alignment: Alignment.topCenter,
-                child:
-                    Image.asset("images/welcomeIcon.jpg", fit: BoxFit.contain),
-              ),
+            SizedBox(
+              width: MediaQuery.of(context).size.width,
+              height:  MediaQuery.of(context).size.height*0.7,
+              child:  Image.asset("images/welcomeIcon.jpg",fit: BoxFit.fill,),
             ),
             Padding(
               padding: EdgeInsets.all(30),
