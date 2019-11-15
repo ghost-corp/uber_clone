@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:uber_clone/phonenumber.dart';
 
 void main() => runApp(MyApp());
 
@@ -10,9 +11,13 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Uber',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primaryColor: Colors.black,
+        accentColor: Colors.black
       ),
       home: MyHomePage(title: 'Uber'),
+      routes: {
+        "phoneNumber": (context) => PhoneNumber(),
+      },
     );
   }
 }
@@ -36,7 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             SizedBox(
               width: MediaQuery.of(context).size.width,
-              height:  MediaQuery.of(context).size.height*0.7,
+              height:  MediaQuery.of(context).size.height*0.65,
               child:  Image.asset("images/welcomeIcon.jpg",fit: BoxFit.fill,),
             ),
             Padding(
@@ -61,12 +66,18 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   Padding(
                     padding: EdgeInsets.only(left: MediaQuery.of(context).size.width*0.025),
-                    child: Text(
-                      "Enter your mobile number",
-                      style: TextStyle(
-                          fontSize: MediaQuery.of(context).size.width*0.05,
-                          fontWeight: FontWeight.w400,
-                          color: Colors.grey),
+                    child: GestureDetector(
+                      onTap: ()
+                      {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => PhoneNumber()));
+                      },
+                      child: Text(
+                        "Enter your mobile number",
+                        style: TextStyle(
+                            fontSize: MediaQuery.of(context).size.width*0.05,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.grey),
+                      ),
                     ),
                   ),
                 ],
