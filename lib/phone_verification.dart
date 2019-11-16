@@ -177,7 +177,9 @@ class VerificationPageState extends State<VerificationPage>{
                       Padding(
                         padding: EdgeInsets.all(10),
                         child: FloatingActionButton(
-                          onPressed: (){
+                          onPressed: ()
+                          {
+                            Navigator.pushNamed(context, "get_moving");
                           },
                           child: Icon(
                             Icons.arrow_forward,
