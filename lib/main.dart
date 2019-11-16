@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:uber_clone/phonenumber.dart';
+import 'phone_verification.dart';
 
 void main() => runApp(MyApp());
 
@@ -16,7 +17,8 @@ class MyApp extends StatelessWidget {
       ),
       home: MyHomePage(title: 'Uber'),
       routes: {
-        "phoneNumber": (context) => PhoneNumber(),
+        "phone_sign_up": (context) => PhoneNumber(),
+        "phone_verification_page": (context)=> VerificationPage()
       },
     );
   }
@@ -71,7 +73,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         child: GestureDetector(
                           onTap: ()
                           {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => PhoneNumber()));
+                            Navigator.pushNamed(context, "phone_sign_up");
                           },
                           child: Text(
                             "Enter your mobile number",
