@@ -10,6 +10,7 @@ class _DiscountState extends State<Discount> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
+        color: Colors.white,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
