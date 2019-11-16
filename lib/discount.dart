@@ -68,7 +68,7 @@ class _DiscountState extends State<Discount> {
               ),
               child: GestureDetector(
                 child: Text(
-                  'Learn more',
+                  'Unsubscribe',
                   style: TextStyle(
                       color: Colors.indigo,
                       fontSize: MediaQuery.of(context).size.height*0.021
