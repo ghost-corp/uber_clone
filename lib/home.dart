@@ -10,115 +10,124 @@ class HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: Container(
-        color: Colors.white,
-        width: MediaQuery.of(context).size.width * 0.8,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.start,
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
           children: <Widget>[
-            Container(
-              color: Colors.black,
-              width: MediaQuery.of(context).size.width * 0.8,
-              height: MediaQuery.of(context).size.height * 0.3,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Center(
-                    child: Padding(
-                      padding: EdgeInsets.only(
-                          top: MediaQuery.of(context).size.width * 0.14,
-                          left: MediaQuery.of(context).size.width * 0.01,
-                          bottom: MediaQuery.of(context).size.width * 0.01,
-                          right: MediaQuery.of(context).size.width * 0.01),
-                      child: Row(
-                        children: <Widget>[
-                          Icon(
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.black
+              ),
+              child: Container(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Icon(
                             Icons.account_circle,
-                            color: Colors.white,
-                            size: MediaQuery.of(context).size.width * 0.2,
-                          ),
-                          Padding(
-                            padding: EdgeInsets.all(3),
-                            child: Text(
-                              "Abdulmalik Abubakar",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize:
-                                      MediaQuery.of(context).size.width * 0.05),
+                          color: Colors.white,
+                          size: MediaQuery.of(context).size.width*0.18,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(3),
+                          child: Text(
+                            'Abdulmalik Abubakar',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: MediaQuery.of(context).size.width*0.048
                             ),
-                          )
-                        ],
+                          ),
+                        )
+                      ],
+                    ),
+                    Divider(
+                      color: Colors.grey,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left:8.0),
+                      child: Text(
+                        "Do more with your account",
+                        style: TextStyle(
+                          color: Colors.grey,
+                        ),
                       ),
                     ),
-                  ),
-                  Divider(
-                    color: Colors.white,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.all(
-                        MediaQuery.of(context).size.width * 0.01),
-                    child: Text(
-                      "Do more with your account",
-                      style: TextStyle(color: Colors.grey),
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.all(
-                        MediaQuery.of(context).size.width * 0.01),
-                    child: Text(
-                      "Make money driving",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  )
-                ],
+                    Padding(
+                      padding: const EdgeInsets.only(left:8.0, top: 12),
+                      child: Text(
+                        "Make money while driving",
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
-            Padding(
-              padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.03),
-              child: Text(
+            ListTile(
+              title: Text(
                 "Your trips",
                 style: TextStyle(
-                    color: Colors.black,
-                    fontSize: MediaQuery.of(context).size.width * 0.05),
+                  color: Colors.black,
+                  fontSize: MediaQuery.of(context).size.width*0.045
+                ),
               ),
+              onTap: null,
             ),
-            Padding(
-              padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.03),
-              child: Text(
+            ListTile(
+              title: Text(
                 "Help",
                 style: TextStyle(
                     color: Colors.black,
-                    fontSize: MediaQuery.of(context).size.width * 0.05),
+                    fontSize: MediaQuery.of(context).size.width*0.045
+                ),
               ),
+              onTap: null,
             ),
-            Padding(
-              padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.03),
-              child: Text(
+            ListTile(
+              title: Text(
                 "Payment",
                 style: TextStyle(
                     color: Colors.black,
-                    fontSize: MediaQuery.of(context).size.width * 0.05),
+                    fontSize: MediaQuery.of(context).size.width*0.045
+                ),
               ),
+              onTap: null,
             ),
-            Padding(
-              padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.03),
-              child: Text(
+            ListTile(
+              title: Text(
                 "Free trips",
                 style: TextStyle(
                     color: Colors.black,
-                    fontSize: MediaQuery.of(context).size.width * 0.05),
+                    fontSize: MediaQuery.of(context).size.width*0.045
+                ),
               ),
+              onTap: null,
             ),
-            Padding(
-              padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.03),
-              child: Text(
+            ListTile(
+              title: Text(
+                "Your trips",
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: MediaQuery.of(context).size.width*0.045
+                ),
+              ),
+              onTap: null,
+            ),
+            ListTile(
+              title: Text(
                 "Settings",
                 style: TextStyle(
                     color: Colors.black,
-                    fontSize: MediaQuery.of(context).size.width * 0.05),
+                    fontSize: MediaQuery.of(context).size.width*0.045
+                ),
               ),
+              onTap: null,
             )
           ],
         ),
