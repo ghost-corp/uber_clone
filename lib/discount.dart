@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'home.dart';
 
 class Discount extends StatefulWidget {
   @override
@@ -83,7 +84,9 @@ class _DiscountState extends State<Discount> {
 
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.arrow_forward),
-        onPressed: null,
+        onPressed: (){
+          Navigator.push(context, MaterialPageRoute(builder: (context)=>HomePage()));
+        },
       ),
     );
   }
