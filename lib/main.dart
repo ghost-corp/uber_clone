@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Uber',
+      title: 'mx ride',
       theme: ThemeData(
         primaryColor: Colors.black,
         accentColor: Colors.black
