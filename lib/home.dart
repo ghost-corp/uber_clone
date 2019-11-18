@@ -98,13 +98,19 @@ class HomePageState extends State<HomePage> {
                     fontSize: MediaQuery.of(context).size.width * 0.05),
               ),
             ),
-            Padding(
-              padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.03),
-              child: Text(
-                "Payment",
-                style: TextStyle(
-                    color: Colors.black,
-                    fontSize: MediaQuery.of(context).size.width * 0.05),
+            GestureDetector(
+              onTap: ()
+              {
+                Navigator.pushNamed(context, "payment");
+              },
+              child: Padding(
+                padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.03),
+                child: Text(
+                  "Payment",
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: MediaQuery.of(context).size.width * 0.05),
+                ),
               ),
             ),
             Padding(
