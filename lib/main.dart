@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:uber_clone/discount.dart';
 import 'package:uber_clone/get_moving.dart';
 import 'package:uber_clone/phonenumber.dart';
+import 'package:uber_clone/settings.dart';
 import 'phone_verification.dart';
 
 void main() => runApp(MyApp());
@@ -22,7 +23,8 @@ class MyApp extends StatelessWidget {
         "phone_sign_up": (context) => PhoneNumber(),
         "phone_verification_page": (context)=> VerificationPage(),
         "get_moving": (context) => GetMoving(),
-        "discount": (context) => Discount()
+        "discount": (context) => Discount(),
+        "settings": (context) => Settings()
       },
     );
   }
