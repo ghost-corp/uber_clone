@@ -9,11 +9,6 @@ class Payment extends StatefulWidget {
 class _PaymentState extends State<Payment> {
   @override
   Widget build(BuildContext context) {
-    var row = Row(
-                children: <Widget>[
-                  
-                ],
-              );
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -67,10 +62,7 @@ class _PaymentState extends State<Payment> {
                             Padding(
                               padding: EdgeInsets.only(left: 26),
                               child: Text(
-                                "Cash",
-                                style: TextStyle(
-                                  fontSize: MediaQuery.of(context).size.height*0.025
-                                ),
+                                "Cash"
                                 ),
                             )
                         ],
