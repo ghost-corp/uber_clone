@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:uber_clone/discount.dart';
 import 'package:uber_clone/get_moving.dart';
+import 'package:uber_clone/payment.dart';
 import 'package:uber_clone/phonenumber.dart';
 import 'package:uber_clone/settings.dart';
 import 'phone_verification.dart';
@@ -24,7 +25,8 @@ class MyApp extends StatelessWidget {
         "phone_verification_page": (context)=> VerificationPage(),
         "get_moving": (context) => GetMoving(),
         "discount": (context) => Discount(),
-        "settings": (context) => Settings()
+        "settings": (context) => Settings(),
+        "payment": (context) => Payment()
       },
     );
   }
