@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
-class VerificationPage extends StatefulWidget{
+class VerificationPage extends StatefulWidget {
   @override
-  State createState()=> VerificationPageState();
+  State createState() => VerificationPageState();
 }
 
-class VerificationPageState extends State<VerificationPage>{
+class VerificationPageState extends State<VerificationPage> {
   @override
-  Widget build(BuildContext context){
-    String phoneNumber=ModalRoute.of(context).settings.arguments;
+  Widget build(BuildContext context) {
+    String phoneNumber = ModalRoute.of(context).settings.arguments;
     return Scaffold(
       body: Container(
         color: Colors.white,
@@ -28,51 +28,53 @@ class VerificationPageState extends State<VerificationPage>{
                         Padding(
                           padding: EdgeInsets.only(left: 8),
                           child: IconButton(
-                              icon: Icon(Icons.arrow_back, color: Colors.black,),
-                              onPressed: ()
-                              {
+                              icon: Icon(
+                                Icons.arrow_back,
+                                color: Colors.black,
+                              ),
+                              onPressed: () {
                                 Navigator.pop(context);
-                              }
-                          ),
+                              }),
                         ),
                         Padding(
                           padding: EdgeInsets.only(left: 20, top: 12),
-                          child: Text('Enter the 4-digit code sent to you at',
+                          child: Text(
+                            'Enter the 4-digit code sent to you at',
                             style: TextStyle(
-                              fontSize: MediaQuery.of(context).size.width*0.055,
+                              fontSize:
+                                  MediaQuery.of(context).size.width * 0.055,
                             ),
                           ),
                         ),
                         Padding(
                           padding: EdgeInsets.only(left: 20, top: 12),
-                          child: Text("+234 $phoneNumber",
+                          child: Text(
+                            "+234 $phoneNumber",
                             style: TextStyle(
-                              fontSize: MediaQuery.of(context).size.width*0.055,
+                              fontSize:
+                                  MediaQuery.of(context).size.width * 0.055,
                             ),
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsets.only(left: 20,top: 20),
+                          padding: EdgeInsets.only(left: 20, top: 20),
                           child: Row(
                             children: <Widget>[
                               Padding(
                                 padding: EdgeInsets.all(10),
                                 child: Container(
-                                  width: MediaQuery.of(context).size.width*0.1,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.1,
                                   child: TextFormField(
                                     autofocus: true,
                                     showCursor: false,
                                     keyboardType: TextInputType.phone,
                                     decoration: InputDecoration(
                                       hintStyle: TextStyle(
-                                          color: Colors.grey,
-                                          fontSize: 25
-                                      ),
+                                          color: Colors.grey, fontSize: 25),
                                       hintText: '0',
                                     ),
-                                    style: TextStyle(
-                                        fontSize: 25
-                                    ),
+                                    style: TextStyle(fontSize: 25),
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
@@ -80,20 +82,17 @@ class VerificationPageState extends State<VerificationPage>{
                               Padding(
                                 padding: EdgeInsets.all(10),
                                 child: Container(
-                                  width: MediaQuery.of(context).size.width*0.1,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.1,
                                   child: TextFormField(
                                     showCursor: false,
                                     keyboardType: TextInputType.phone,
                                     decoration: InputDecoration(
                                       hintStyle: TextStyle(
-                                          color: Colors.grey,
-                                          fontSize: 25
-                                      ),
+                                          color: Colors.grey, fontSize: 25),
                                       hintText: '0',
                                     ),
-                                    style: TextStyle(
-                                        fontSize: 25
-                                    ),
+                                    style: TextStyle(fontSize: 25),
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
@@ -101,20 +100,17 @@ class VerificationPageState extends State<VerificationPage>{
                               Padding(
                                 padding: EdgeInsets.all(10),
                                 child: Container(
-                                  width: MediaQuery.of(context).size.width*0.1,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.1,
                                   child: TextFormField(
                                     showCursor: false,
                                     keyboardType: TextInputType.phone,
                                     decoration: InputDecoration(
                                       hintStyle: TextStyle(
-                                          color: Colors.grey,
-                                          fontSize: 25
-                                      ),
+                                          color: Colors.grey, fontSize: 25),
                                       hintText: '0',
                                     ),
-                                    style: TextStyle(
-                                        fontSize: 25
-                                    ),
+                                    style: TextStyle(fontSize: 25),
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
@@ -122,20 +118,17 @@ class VerificationPageState extends State<VerificationPage>{
                               Padding(
                                 padding: EdgeInsets.all(10),
                                 child: Container(
-                                  width: MediaQuery.of(context).size.width*0.1,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.1,
                                   child: TextFormField(
                                     showCursor: false,
                                     keyboardType: TextInputType.phone,
                                     decoration: InputDecoration(
                                       hintStyle: TextStyle(
-                                          color: Colors.grey,
-                                          fontSize: 25
-                                      ),
+                                          color: Colors.grey, fontSize: 25),
                                       hintText: '0',
                                     ),
-                                    style: TextStyle(
-                                        fontSize: 25
-                                    ),
+                                    style: TextStyle(fontSize: 25),
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
@@ -162,13 +155,12 @@ class VerificationPageState extends State<VerificationPage>{
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
                             GestureDetector(
-                              onTap: (){
+                              onTap: () {
                                 Navigator.pop(context);
                               },
-                              child: Text('Edit my mobile number'
-                                ,style: TextStyle(
-                                    color: Colors.blueGrey[600]
-                                ),
+                              child: Text(
+                                'Edit my mobile number',
+                                style: TextStyle(color: Colors.blueGrey[600]),
                               ),
                             ),
                           ],
@@ -177,8 +169,7 @@ class VerificationPageState extends State<VerificationPage>{
                       Padding(
                         padding: EdgeInsets.all(10),
                         child: FloatingActionButton(
-                          onPressed: ()
-                          {
+                          onPressed: () {
                             Navigator.pushNamed(context, "get_moving");
                           },
                           child: Icon(
