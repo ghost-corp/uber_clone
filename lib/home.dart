@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:location/location.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -45,7 +46,7 @@ class HomePageState extends State<HomePage> {
                               style: TextStyle(
                                   color: Colors.white,
                                   fontSize:
-                                  MediaQuery.of(context).size.width * 0.05),
+                                      MediaQuery.of(context).size.width * 0.05),
                             ),
                           )
                         ],
@@ -59,7 +60,9 @@ class HomePageState extends State<HomePage> {
                     padding: EdgeInsets.all(
                         MediaQuery.of(context).size.width * 0.01),
                     child: Padding(
-                      padding: EdgeInsets.only(bottom:  MediaQuery.of(context).size.width * 0.03,left: MediaQuery.of(context).size.width * 0.04),
+                      padding: EdgeInsets.only(
+                          bottom: MediaQuery.of(context).size.width * 0.03,
+                          left: MediaQuery.of(context).size.width * 0.04),
                       child: Text(
                         "Do more with your account",
                         style: TextStyle(color: Colors.grey),
@@ -70,7 +73,9 @@ class HomePageState extends State<HomePage> {
                     padding: EdgeInsets.all(
                         MediaQuery.of(context).size.width * 0.01),
                     child: Padding(
-                      padding: EdgeInsets.only(bottom:  MediaQuery.of(context).size.width * 0.05,left: MediaQuery.of(context).size.width * 0.04),
+                      padding: EdgeInsets.only(
+                          bottom: MediaQuery.of(context).size.width * 0.05,
+                          left: MediaQuery.of(context).size.width * 0.04),
                       child: Text(
                         "Make money driving",
                         style: TextStyle(color: Colors.white),
@@ -99,12 +104,12 @@ class HomePageState extends State<HomePage> {
               ),
             ),
             GestureDetector(
-              onTap: ()
-              {
+              onTap: () {
                 Navigator.pushNamed(context, "payment");
               },
               child: Padding(
-                padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.03),
+                padding:
+                    EdgeInsets.all(MediaQuery.of(context).size.width * 0.03),
                 child: Text(
                   "Payment",
                   style: TextStyle(
@@ -128,7 +133,7 @@ class HomePageState extends State<HomePage> {
                 onTap: () {
                   Navigator.pushNamed(context, "settings");
                 },
-                  child: Text(
+                child: Text(
                   "Settings",
                   style: TextStyle(
                       color: Colors.black,
@@ -151,6 +156,62 @@ class HomeBody extends StatefulWidget {
 
 class HomeBodyState extends State<HomeBody> {
   GoogleMapController mapController;
+  Map<CircleId, Circle> circles = new Map();
+  Location location = new Location();
+  bool serviceEnabled;
+  PermissionStatus permissionGranted;
+  LocationData locationData;
+
+  @override
+  void initState() {
+    getLocation() async {
+      serviceEnabled = await location.serviceEnabled();
+      if (!serviceEnabled) {
+        serviceEnabled = await location.requestService();
+        if (!serviceEnabled) {
+          return;
+        }
+      }
+
+      permissionGranted = await location.hasPermission();
+      if (permissionGranted == PermissionStatus.denied) {
+        permissionGranted = await location.requestPermission();
+        if (permissionGranted != PermissionStatus.granted) {
+          return;
+        }
+      }
+      locationData = await location.getLocation();
+      setCameraPosition();
+      setCircle();
+    }
+
+    getLocation();
+    super.initState();
+  }
+
+  void setCameraPosition() {
+    mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+        target: LatLng(locationData.latitude, locationData.longitude),
+        zoom: 11.0)));
+  }
+
+  void setCircle() {
+    String circleIdVal = 'nearbyCircle';
+    CircleId circleId = CircleId(circleIdVal);
+    Circle circle = Circle(
+        circleId: circleId,
+        consumeTapEvents: true,
+        strokeColor: Color(0x262196F3),
+        fillColor: Color.fromARGB(50, 74, 63, 250),
+        strokeWidth: 0,
+        radius: 9000,
+        center: LatLng(locationData.latitude, locationData.longitude),
+        onTap: () {});
+    setState(() {
+      circles.putIfAbsent(circleId, () => circle);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -164,6 +225,13 @@ class HomeBodyState extends State<HomeBody> {
                 },
                 initialCameraPosition: CameraPosition(
                     target: LatLng(45.521, -122.677433), zoom: 11.0),
+                myLocationEnabled: true,
+                myLocationButtonEnabled: true,
+                zoomControlsEnabled: false,
+                compassEnabled: false,
+                trafficEnabled: false,
+                buildingsEnabled: false,
+                circles: Set<Circle>.of(circles.values),
               ),
               SafeArea(
                 child: Align(
@@ -233,7 +301,7 @@ class HomeBodyState extends State<HomeBody> {
               ),
               Padding(
                 padding:
-                EdgeInsets.all(MediaQuery.of(context).size.height * 0.01),
+                    EdgeInsets.all(MediaQuery.of(context).size.height * 0.01),
                 child: Text(
                   "Choose a saved place",
                   style: TextStyle(fontWeight: FontWeight.w500),
