@@ -1,14 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:uber_clone/discount.dart';
 import 'package:uber_clone/get_moving.dart';
 import 'package:uber_clone/home.dart';
+import 'package:uber_clone/models/location_model.dart';
 import 'package:uber_clone/payment.dart';
 import 'package:uber_clone/phonenumber.dart';
 import 'package:uber_clone/settings.dart';
-import 'package:uber_clone/welcome_page.dart';
 import 'phone_verification.dart';
+import 'package:provider/provider.dart';
 
-void main() => runApp(MyApp());
+void main(){
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations(
+      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider(
+        create: (context)=>LocationModel(),
+      ),
+    ],
+    child: MyApp(),
+  ));
+}
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -16,7 +30,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'mx ride',
+      title: 'Uber Clone',
       theme: ThemeData(primaryColor: Colors.black, accentColor: Colors.black),
 //      home: WelcomePage(title: 'Uber'),
       home: HomePage(),

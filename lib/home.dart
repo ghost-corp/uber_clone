@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:location/location.dart';
+import 'package:provider/provider.dart';
+import 'package:uber_clone/models/location_model.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -156,82 +157,86 @@ class HomeBody extends StatefulWidget {
 
 class HomeBodyState extends State<HomeBody> {
   GoogleMapController mapController;
-  Map<CircleId, Circle> circles = new Map();
-  Location location = new Location();
-  bool serviceEnabled;
-  PermissionStatus permissionGranted;
-  LocationData locationData;
+  GlobalKey mapKey = new GlobalKey();
+  BitmapDescriptor driverIcon;
+  int buildCount =0;
 
-  @override
-  void initState() {
-    getLocation() async {
-      serviceEnabled = await location.serviceEnabled();
-      if (!serviceEnabled) {
-        serviceEnabled = await location.requestService();
-        if (!serviceEnabled) {
-          return;
-        }
-      }
-
-      permissionGranted = await location.hasPermission();
-      if (permissionGranted == PermissionStatus.denied) {
-        permissionGranted = await location.requestPermission();
-        if (permissionGranted != PermissionStatus.granted) {
-          return;
-        }
-      }
-      locationData = await location.getLocation();
-      setCameraPosition();
-      setCircle();
+  void initializeMarkerIcons() {
+    if (driverIcon == null) {
+      final ImageConfiguration imageConfiguration =
+          createLocalImageConfiguration(context,size:Size(10,10));
+      BitmapDescriptor.fromAssetImage(imageConfiguration, "images/taxi.png")
+          .then((value) {
+        setState(() {
+          driverIcon = value;
+        });
+      });
     }
-
-    getLocation();
-    super.initState();
-  }
-
-  void setCameraPosition() {
-    mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-        target: LatLng(locationData.latitude, locationData.longitude),
-        zoom: 11.0)));
-  }
-
-  void setCircle() {
-    String circleIdVal = 'nearbyCircle';
-    CircleId circleId = CircleId(circleIdVal);
-    Circle circle = Circle(
-        circleId: circleId,
-        consumeTapEvents: true,
-        strokeColor: Color(0x262196F3),
-        fillColor: Color.fromARGB(50, 74, 63, 250),
-        strokeWidth: 0,
-        radius: 9000,
-        center: LatLng(locationData.latitude, locationData.longitude),
-        onTap: () {});
-    setState(() {
-      circles.putIfAbsent(circleId, () => circle);
-    });
   }
 
   @override
   Widget build(BuildContext context) {
+    if(buildCount==0){
+      initializeMarkerIcons();
+    }
+    if(buildCount<1){
+      buildCount++;
+    }
     return Column(
       children: <Widget>[
         Expanded(
           child: Stack(
             children: <Widget>[
-              GoogleMap(
-                onMapCreated: (GoogleMapController controller) {
-                  mapController = controller;
+              Consumer<LocationModel>(
+                builder: (context, locationModel, child) {
+                  String circleIdVal = 'nearbyCircle';
+                  CircleId circleId = CircleId(circleIdVal);
+                  Circle circle;
+                  if (locationModel.currentLocation != null) {
+                    circle = Circle(
+                        circleId: circleId,
+                        consumeTapEvents: true,
+                        strokeColor: Color(0x262196F3),
+                        fillColor: Color(0x262196F3),
+                        strokeWidth: 0,
+                        radius: 6000,
+                        center: LatLng(locationModel.currentLocation.latitude,
+                            locationModel.currentLocation.longitude),
+                        onTap: () {});
+                  }
+
+                  List<Marker> drivers = new List();
+                  for (int x = 0; x < locationModel.nearbyDrivers.length; x++) {
+                    drivers.add(Marker(
+                        markerId: MarkerId("marker_$x"),
+                        position: locationModel.nearbyDrivers[x].liveLocation,
+                        icon: driverIcon));
+                  }
+
+                  if (locationModel.currentLocation == null) {
+                    return Container();
+                  }
+
+                  return GoogleMap(
+                    key: mapKey,
+                    onMapCreated: (GoogleMapController controller) {
+                      mapController = controller;
+                    },
+                    initialCameraPosition: CameraPosition(
+                        target: LatLng(locationModel.currentLocation.latitude,
+                            locationModel.currentLocation.longitude),
+                        zoom: 12.0),
+                    myLocationEnabled: true,
+                    myLocationButtonEnabled: true,
+                    zoomControlsEnabled: false,
+                    compassEnabled: false,
+                    trafficEnabled: false,
+                    buildingsEnabled: false,
+                    circles: circle == null ? null : Set<Circle>.of([circle]),
+                    markers:
+                        drivers.length == 0 ? null : Set<Marker>.of(drivers),
+                  );
                 },
-                initialCameraPosition: CameraPosition(
-                    target: LatLng(45.521, -122.677433), zoom: 11.0),
-                myLocationEnabled: true,
-                myLocationButtonEnabled: true,
-                zoomControlsEnabled: false,
-                compassEnabled: false,
-                trafficEnabled: false,
-                buildingsEnabled: false,
-                circles: Set<Circle>.of(circles.values),
               ),
               SafeArea(
                 child: Align(
