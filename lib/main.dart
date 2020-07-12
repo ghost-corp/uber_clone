@@ -6,6 +6,7 @@ import 'package:uber_clone/payment.dart';
 import 'package:uber_clone/phonenumber.dart';
 import 'package:uber_clone/settings.dart';
 import 'package:uber_clone/welcome_page.dart';
+import 'package:uber_clone/where_to.dart';
 import 'phone_verification.dart';
 
 void main() => runApp(MyApp());
@@ -26,7 +27,8 @@ class MyApp extends StatelessWidget {
         "get_moving": (context) => GetMoving(),
         "discount": (context) => Discount(),
         "settings": (context) => Settings(),
-        "payment": (context) => Payment()
+        "payment": (context) => Payment(),
+        "where_to": (context) => WhereToScreen()
       },
     );
   }
