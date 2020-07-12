@@ -159,12 +159,12 @@ class HomeBodyState extends State<HomeBody> {
   GoogleMapController mapController;
   GlobalKey mapKey = new GlobalKey();
   BitmapDescriptor driverIcon;
-  int buildCount =0;
+  int buildCount = 0;
 
   void initializeMarkerIcons() {
     if (driverIcon == null) {
       final ImageConfiguration imageConfiguration =
-          createLocalImageConfiguration(context,size:Size(10,10));
+          createLocalImageConfiguration(context, size: Size(10, 10));
       BitmapDescriptor.fromAssetImage(imageConfiguration, "images/taxi.png")
           .then((value) {
         setState(() {
@@ -176,10 +176,10 @@ class HomeBodyState extends State<HomeBody> {
 
   @override
   Widget build(BuildContext context) {
-    if(buildCount==0){
+    if (buildCount == 0) {
       initializeMarkerIcons();
     }
-    if(buildCount<1){
+    if (buildCount < 1) {
       buildCount++;
     }
     return Column(
@@ -189,6 +189,7 @@ class HomeBodyState extends State<HomeBody> {
             children: <Widget>[
               Consumer<LocationModel>(
                 builder: (context, locationModel, child) {
+                  //creates the nearby location circle
                   String circleIdVal = 'nearbyCircle';
                   CircleId circleId = CircleId(circleIdVal);
                   Circle circle;
@@ -205,6 +206,7 @@ class HomeBodyState extends State<HomeBody> {
                         onTap: () {});
                   }
 
+                  //creates markers to be placed on the map for each driver
                   List<Marker> drivers = new List();
                   for (int x = 0; x < locationModel.nearbyDrivers.length; x++) {
                     drivers.add(Marker(
@@ -282,7 +284,7 @@ class HomeBodyState extends State<HomeBody> {
               child: Container(
                 height: MediaQuery.of(context).size.height * 0.06,
                 width: MediaQuery.of(context).size.width * 0.92,
-                  color: Colors.grey[300],
+                color: Colors.grey[300],
                 child: Padding(
                   padding: EdgeInsets.all(10),
                   child: Align(

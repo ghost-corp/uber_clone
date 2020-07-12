@@ -7,7 +7,6 @@ import 'package:uber_clone/models/location_model.dart';
 import 'package:uber_clone/payment.dart';
 import 'package:uber_clone/phonenumber.dart';
 import 'package:uber_clone/settings.dart';
-import 'package:uber_clone/welcome_page.dart';
 import 'package:uber_clone/where_to.dart';
 import 'phone_verification.dart';
 import 'package:provider/provider.dart';

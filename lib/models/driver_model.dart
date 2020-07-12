@@ -40,14 +40,14 @@ class DriverModel {
     math.Random random = new math.Random();
     var u = random.nextDouble();
     var v = random.nextDouble();
-    var w = (6000/111300)*math.sqrt(u);
-    var t = 2*math.pi*v;
-    var x = w*math.cos(t);
-    var y = w*math.sin(t);
-    x= x/math.cos(referenceLocation.latitude);
-    x=x+referenceLocation.longitude;
-    y=y+referenceLocation.latitude;
-    return LatLng(y,x);
+    var w = (6000 / 111300) * math.sqrt(u);
+    var t = 2 * math.pi * v;
+    var x = w * math.cos(t);
+    var y = w * math.sin(t);
+    x = x / math.cos(referenceLocation.latitude);
+    x = x + referenceLocation.longitude;
+    y = y + referenceLocation.latitude;
+    return LatLng(y, x);
   }
 }
 
