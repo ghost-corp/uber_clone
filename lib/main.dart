@@ -6,6 +6,7 @@ import 'package:uber_clone/home.dart';
 import 'package:uber_clone/models/location_model.dart';
 import 'package:uber_clone/payment.dart';
 import 'package:uber_clone/phonenumber.dart';
+import 'package:uber_clone/pickup_location.dart';
 import 'package:uber_clone/settings.dart';
 import 'package:uber_clone/where_to.dart';
 import 'phone_verification.dart';
@@ -42,7 +43,8 @@ class MyApp extends StatelessWidget {
         "discount": (context) => Discount(),
         "settings": (context) => Settings(),
         "payment": (context) => Payment(),
-        "where_to": (context) => WhereToScreen()
+        "where_to": (context) => WhereToScreen(),
+        "pickup_location": (context) => PickUpLocation()
       },
     );
   }
