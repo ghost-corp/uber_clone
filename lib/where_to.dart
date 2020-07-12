@@ -125,7 +125,9 @@ class _WhereToScreenState extends State<WhereToScreen> {
                         ),
                         padding: EdgeInsets.symmetric(vertical: 12),
                         color: Colors.black,
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.of(context).pushNamed("pickup_location");
+                        },
                       ),
                     ),
                   ),
