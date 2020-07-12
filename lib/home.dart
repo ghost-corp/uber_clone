@@ -275,17 +275,22 @@ class HomeBodyState extends State<HomeBody> {
         Padding(
           padding: EdgeInsets.all(MediaQuery.of(context).size.height * 0.015),
           child: Center(
-            child: Container(
-              height: MediaQuery.of(context).size.height * 0.06,
-              width: MediaQuery.of(context).size.width * 0.92,
-              color: Colors.grey[300],
-              child: Padding(
-                padding: EdgeInsets.all(10),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    "Where to?",
-                    style: TextStyle(fontSize: 16),
+            child: InkWell(
+              onTap: () {
+                Navigator.of(context).pushNamed("where_to");
+              },
+              child: Container(
+                height: MediaQuery.of(context).size.height * 0.06,
+                width: MediaQuery.of(context).size.width * 0.92,
+                  color: Colors.grey[300],
+                child: Padding(
+                  padding: EdgeInsets.all(10),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "Where to?",
+                      style: TextStyle(fontSize: 16),
+                    ),
                   ),
                 ),
               ),
