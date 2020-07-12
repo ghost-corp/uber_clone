@@ -173,9 +173,9 @@ class _WhereToScreenState extends State<WhereToScreen> {
                 FocusScope.of(context).requestFocus(new FocusNode());
               },
               child: Container(
-                height: MediaQuery.of(context).size.height * 0.8,
+                height: MediaQuery.of(context).size.height * 0.82,
                 width: MediaQuery.of(context).size.width,
-                color: Colors.white,
+                color: Colors.white70,
               ),
             ),
           )
