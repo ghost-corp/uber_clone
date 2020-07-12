@@ -31,6 +31,7 @@ dependencies:
   google_maps_flutter: ^0.5.11
   font_awesome_flutter: ^8.5.0
   location: ^3.0.2
+  provider: ^4.0.0
 
 dev_dependencies:
   flutter_test:
@@ -59,6 +60,7 @@ flutter:
     - images/individual.png
     - images/briefcase.png
     - images/voucher.png
+    - images/taxi.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
