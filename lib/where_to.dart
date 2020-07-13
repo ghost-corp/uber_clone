@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
@@ -55,6 +54,41 @@ class _WhereToScreenState extends State<WhereToScreen> {
             myLocationEnabled: true,
             zoomControlsEnabled: false,
           ),
+          doneButton
+              ? Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Padding(
+                    padding: EdgeInsets.only(bottom: 20),
+                    child: Container(
+                      width: MediaQuery.of(context).size.width * 0.8,
+                      child: FlatButton(
+                        child: Text(
+                          'DONE',
+                          style: TextStyle(color: Colors.white, fontSize: 16),
+                        ),
+                        padding: EdgeInsets.symmetric(vertical: 12),
+                        color: Colors.black,
+                        onPressed: () {
+                          Navigator.of(context).pushNamed("pickup_location");
+                        },
+                      ),
+                    ),
+                  ),
+                )
+              : Padding(
+                  padding: EdgeInsets.only(
+                      top: MediaQuery.of(context).size.height * 0.18),
+                  child: GestureDetector(
+                    onTap: () {
+                      FocusScope.of(context).requestFocus(new FocusNode());
+                    },
+                    child: Container(
+                      height: MediaQuery.of(context).size.height * 0.82,
+                      width: MediaQuery.of(context).size.width,
+                      color: Colors.transparent,
+                    ),
+                  ),
+                ),
           Column(
             children: <Widget>[
               Material(
@@ -93,8 +127,7 @@ class _WhereToScreenState extends State<WhereToScreen> {
                               child: Consumer<LocationModel>(
                                 builder: (context, locationModel, _) {
                                   controller.text = locationModel
-                                      .pickUpLocationInfo
-                                      .formattedAddress;
+                                      .pickUpLocationInfo.formattedAddress;
                                   return TextField(
                                     controller: controller,
                                     onTap: () {
@@ -155,12 +188,12 @@ class _WhereToScreenState extends State<WhereToScreen> {
                   ),
                 ),
               ),
-              searchResult == null
+              searchResult == null || doneButton == true
                   ? Container()
                   : searchResult.length > 0
                       ? Container(
                           color: Colors.white,
-                          height: height(context) - height(context) * 0.6,
+                          height: height(context) * 0.3,
                           width: width(context),
                           child: ListView.builder(
                             itemCount: searchResult.length,
@@ -168,21 +201,35 @@ class _WhereToScreenState extends State<WhereToScreen> {
                               return InkWell(
                                 onTap: () {
                                   destinationController.clear();
-                                  Provider.of<LocationModel>(context, listen: false)
-                                  .dropOffLocationInfo = searchResult[count];
+                                  Provider.of<LocationModel>(context,
+                                              listen: false)
+                                          .dropOffLocationInfo =
+                                      searchResult[count];
                                   print('drop off location');
-                                  print('${Provider.of<LocationModel>(context, listen: false)
-                                      .dropOffLocationInfo.formattedAddress}');
+                                  print(
+                                      '${Provider.of<LocationModel>(context, listen: false).dropOffLocationInfo.formattedAddress}');
                                   destinationController.text =
-                                      Provider.of<LocationModel>(context, listen: false)
-                                  .dropOffLocationInfo.name;
-
+                                      Provider.of<LocationModel>(context,
+                                              listen: false)
+                                          .dropOffLocationInfo
+                                          .name;
+                                  setState(() {
+                                    doneButton = true;
+                                  });
+                                  FocusScope.of(context)
+                                      .requestFocus(new FocusNode());
                                 },
-                                child: ListTile(
-                                  title:
-                                      Text(searchResult[count].formattedAddress),
-                                  subtitle: Text(searchResult[count].name),
-                                  leading: Icon(Icons.location_on),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: <Widget>[
+                                    ListTile(
+                                      title: Text(
+                                          searchResult[count].formattedAddress),
+                                      subtitle: Text(searchResult[count].name),
+                                      leading: Icon(Icons.location_on),
+                                    ),
+                                    Divider()
+                                  ],
                                 ),
                               );
                             },
@@ -191,44 +238,6 @@ class _WhereToScreenState extends State<WhereToScreen> {
                       : Container(),
             ],
           ),
-          doneButton
-              ? Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Padding(
-                    padding: EdgeInsets.only(bottom: 20),
-                    child: Container(
-                      width: MediaQuery.of(context).size.width * 0.8,
-                      child: FlatButton(
-                        child: Text(
-                          'DONE',
-                          style: TextStyle(color: Colors.white, fontSize: 16),
-                        ),
-                        padding: EdgeInsets.symmetric(vertical: 12),
-                        color: Colors.black,
-                        onPressed: () {
-                          Navigator.of(context).pushNamed("pickup_location");
-                        },
-                      ),
-                    ),
-                  ),
-                )
-              : Padding(
-                  padding: EdgeInsets.only(
-                      top: MediaQuery.of(context).size.height * 0.18),
-                  child: GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        doneButton = true;
-                      });
-                      FocusScope.of(context).requestFocus(new FocusNode());
-                    },
-                    child: Container(
-                      height: MediaQuery.of(context).size.height * 0.82,
-                      width: MediaQuery.of(context).size.width,
-                      color: Colors.transparent,
-                    ),
-                  ),
-                )
         ],
       ),
     );
