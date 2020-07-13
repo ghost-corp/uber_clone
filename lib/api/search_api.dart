@@ -43,9 +43,8 @@ class SearchApi {
       if (formattedResponse['status'] == "OK") {
         searchResult = Place(
             formattedAddress: formattedResponse['results'][0]
-                ['address_components'][0]['long_name'],
-            name: formattedResponse['results'][0]['address_components'][0]
-                ['short_name'],
+                ['formatted_address'],
+            name: formattedResponse['results'][0]['formatted_address'],
             placeId: formattedResponse['results'][0]['place_id']);
         return searchResult;
       } else {

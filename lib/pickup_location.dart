@@ -10,7 +10,6 @@ class PickUpLocation extends StatefulWidget {
 }
 
 class _PickUpLocationState extends State<PickUpLocation> {
-
   String pickUpSpot;
   @override
   Widget build(BuildContext context) {
@@ -78,7 +77,8 @@ class _PickUpLocationState extends State<PickUpLocation> {
                       children: <Widget>[
                         Consumer<LocationModel>(
                           builder: (context, locationModel, _) {
-                            pickUpSpot = locationModel.pickUpLocationInfo.formattedAddress;
+                            pickUpSpot = locationModel
+                                .pickUpLocationInfo.formattedAddress;
                             return Text(
                               '$pickUpSpot',
                               style: TextStyle(
