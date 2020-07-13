@@ -12,7 +12,7 @@ class WhereToScreen extends StatefulWidget {
 }
 
 class _WhereToScreenState extends State<WhereToScreen> {
-  bool doneButton = true;
+  bool doneButton = false;
   List<Place> searchResult = new List();
   bool fetchingResult = false;
   StreamSubscription searchStream;
