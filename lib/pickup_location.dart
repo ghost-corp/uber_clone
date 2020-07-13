@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:uber_clone/global/screen_size.dart';
+import 'package:uber_clone/models/location_model.dart';
 
 class PickUpLocation extends StatefulWidget {
   @override
@@ -8,6 +10,8 @@ class PickUpLocation extends StatefulWidget {
 }
 
 class _PickUpLocationState extends State<PickUpLocation> {
+
+  String pickUpSpot;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,10 +76,15 @@ class _PickUpLocationState extends State<PickUpLocation> {
                       mainAxisSize: MainAxisSize.max,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
-                        Text(
-                          'Unnamed Road',
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.w500),
+                        Consumer<LocationModel>(
+                          builder: (context, locationModel, _) {
+                            pickUpSpot = locationModel.pickUpLocationInfo.formattedAddress;
+                            return Text(
+                              '$pickUpSpot',
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.w500),
+                            );
+                          },
                         ),
                         SizedBox(
                           width: 20,
