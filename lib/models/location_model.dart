@@ -11,7 +11,9 @@ class LocationModel extends ChangeNotifier {
   bool serviceEnabled;
   PermissionStatus permissionGranted;
   LocationData currentLocation;
-  Place currentLocationInformation =
+  Place pickUpLocationInfo =
+      new Place(formattedAddress: "", placeId: "", name: "");
+  Place dropOffLocationInfo =
       new Place(formattedAddress: "", placeId: "", name: "");
   GoogleMapController mapController;
   List<Driver> nearbyDrivers = new List();
@@ -42,7 +44,7 @@ class LocationModel extends ChangeNotifier {
 
     //get current user location
     currentLocation = await location.getLocation();
-    currentLocationInformation = await SearchApi.convertCoordinatesToAddress(
+    pickUpLocationInfo = await SearchApi.convertCoordinatesToAddress(
         LatLng(currentLocation.latitude, currentLocation.longitude));
     nearbyDrivers = DriverModel.getDummyDrivers(
         LatLng(currentLocation.latitude, currentLocation.longitude));
@@ -52,7 +54,7 @@ class LocationModel extends ChangeNotifier {
     timer = Timer.periodic(Duration(seconds: 30), (timer) async {
       print("updating location");
       currentLocation = await location.getLocation();
-      currentLocationInformation = await SearchApi.convertCoordinatesToAddress(
+      pickUpLocationInfo = await SearchApi.convertCoordinatesToAddress(
           LatLng(currentLocation.latitude, currentLocation.longitude));
       notifyListeners();
     });

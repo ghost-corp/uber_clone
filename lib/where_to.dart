@@ -18,6 +18,7 @@ class _WhereToScreenState extends State<WhereToScreen> {
   bool fetchingResult = false;
   StreamSubscription searchStream;
   TextEditingController controller = new TextEditingController();
+  TextEditingController destinationController = new TextEditingController();
 
   void getSearchResult(BuildContext context, String searchKey) {
     if (searchStream != null) {
@@ -92,7 +93,7 @@ class _WhereToScreenState extends State<WhereToScreen> {
                               child: Consumer<LocationModel>(
                                 builder: (context, locationModel, _) {
                                   controller.text = locationModel
-                                      .currentLocationInformation
+                                      .pickUpLocationInfo
                                       .formattedAddress;
                                   return TextField(
                                     controller: controller,
@@ -123,6 +124,7 @@ class _WhereToScreenState extends State<WhereToScreen> {
                               height: 35,
                               width: MediaQuery.of(context).size.width * 0.76,
                               child: TextField(
+                                controller: destinationController,
                                 onTap: () {
                                   setState(() {
                                     doneButton = false;
@@ -163,11 +165,25 @@ class _WhereToScreenState extends State<WhereToScreen> {
                           child: ListView.builder(
                             itemCount: searchResult.length,
                             itemBuilder: (context, count) {
-                              return ListTile(
-                                title:
-                                    Text(searchResult[count].formattedAddress),
-                                subtitle: Text(searchResult[count].name),
-                                leading: Icon(Icons.location_on),
+                              return InkWell(
+                                onTap: () {
+                                  destinationController.clear();
+                                  Provider.of<LocationModel>(context, listen: false)
+                                  .dropOffLocationInfo = searchResult[count];
+                                  print('drop off location');
+                                  print('${Provider.of<LocationModel>(context, listen: false)
+                                      .dropOffLocationInfo.formattedAddress}');
+                                  destinationController.text =
+                                      Provider.of<LocationModel>(context, listen: false)
+                                  .dropOffLocationInfo.name;
+
+                                },
+                                child: ListTile(
+                                  title:
+                                      Text(searchResult[count].formattedAddress),
+                                  subtitle: Text(searchResult[count].name),
+                                  leading: Icon(Icons.location_on),
+                                ),
                               );
                             },
                           ),
