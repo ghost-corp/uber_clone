@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:uber_clone/api/search_api.dart';
 import 'package:uber_clone/models/driver_model.dart';
 
 class LocationModel extends ChangeNotifier {
@@ -8,8 +11,11 @@ class LocationModel extends ChangeNotifier {
   bool serviceEnabled;
   PermissionStatus permissionGranted;
   LocationData currentLocation;
+  Place currentLocationInformation =
+      new Place(formattedAddress: "", placeId: "", name: "");
   GoogleMapController mapController;
   List<Driver> nearbyDrivers = new List();
+  Timer timer;
 
   LocationModel() {
     setLocation();
@@ -36,14 +42,18 @@ class LocationModel extends ChangeNotifier {
 
     //get current user location
     currentLocation = await location.getLocation();
+    currentLocationInformation = await SearchApi.convertCoordinatesToAddress(
+        LatLng(currentLocation.latitude, currentLocation.longitude));
     nearbyDrivers = DriverModel.getDummyDrivers(
         LatLng(currentLocation.latitude, currentLocation.longitude));
     notifyListeners();
 
     //update user location as it changes
-    location.onLocationChanged.listen((data) {
-      print("updating location.............");
-      currentLocation = data;
+    timer = Timer.periodic(Duration(seconds: 30), (timer) async {
+      print("updating location");
+      currentLocation = await location.getLocation();
+      currentLocationInformation = await SearchApi.convertCoordinatesToAddress(
+          LatLng(currentLocation.latitude, currentLocation.longitude));
       notifyListeners();
     });
   }
