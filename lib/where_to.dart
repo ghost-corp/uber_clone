@@ -17,6 +17,7 @@ class _WhereToScreenState extends State<WhereToScreen> {
   List<Place> searchResult = new List();
   bool fetchingResult = false;
   StreamSubscription searchStream;
+  TextEditingController controller = new TextEditingController();
 
   void getSearchResult(BuildContext context, String searchKey) {
     if (searchStream != null) {
@@ -90,11 +91,9 @@ class _WhereToScreenState extends State<WhereToScreen> {
                               width: MediaQuery.of(context).size.width * 0.76,
                               child: Consumer<LocationModel>(
                                 builder: (context, locationModel, _) {
-                                  TextEditingController controller =
-                                      new TextEditingController(
-                                          text: locationModel
-                                              .currentLocationInformation
-                                              .formattedAddress);
+                                  controller.text = locationModel
+                                      .currentLocationInformation
+                                      .formattedAddress;
                                   return TextField(
                                     controller: controller,
                                     onTap: () {
