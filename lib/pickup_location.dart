@@ -10,7 +10,6 @@ class PickUpLocation extends StatefulWidget {
 class _PickUpLocationState extends State<PickUpLocation> {
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -19,8 +18,8 @@ class _PickUpLocationState extends State<PickUpLocation> {
             width: width(context),
           ),
           GoogleMap(
-            initialCameraPosition: CameraPosition(
-                target: LatLng(45.521, -122.677433), zoom: 11.0),
+            initialCameraPosition:
+                CameraPosition(target: LatLng(45.521, -122.677433), zoom: 11.0),
             trafficEnabled: false,
             myLocationEnabled: true,
             myLocationButtonEnabled: true,
@@ -29,9 +28,7 @@ class _PickUpLocationState extends State<PickUpLocation> {
           Align(
             alignment: Alignment.topLeft,
             child: Padding(
-              padding: EdgeInsets.only(
-                top: 30, left: 5
-              ),
+              padding: EdgeInsets.only(top: 30, left: 5),
               child: IconButton(
                 icon: Icon(
                   Icons.arrow_back,
@@ -53,15 +50,13 @@ class _PickUpLocationState extends State<PickUpLocation> {
                 children: <Widget>[
                   Padding(
                     padding: EdgeInsets.only(
-                      top: height(context) * 0.02, bottom: height(context) * 0.02
-                    ),
+                        top: height(context) * 0.02,
+                        bottom: height(context) * 0.02),
                     child: Center(
                       child: Text(
                         'Set your pick-up location',
                         style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700
-                        ),
+                            fontSize: 18, fontWeight: FontWeight.w700),
                       ),
                     ),
                   ),
@@ -70,8 +65,8 @@ class _PickUpLocationState extends State<PickUpLocation> {
                   ),
                   Padding(
                     padding: EdgeInsets.only(
-                      top: height(context) * 0.02, bottom: height(context) * 0.02
-                    ),
+                        top: height(context) * 0.02,
+                        bottom: height(context) * 0.02),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       mainAxisSize: MainAxisSize.max,
@@ -80,38 +75,29 @@ class _PickUpLocationState extends State<PickUpLocation> {
                         Text(
                           'Unnamed Road',
                           style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w500
-                          ),
+                              fontSize: 18, fontWeight: FontWeight.w500),
                         ),
                         SizedBox(
                           width: 20,
                         ),
-
                         FlatButton(
                           child: Text(
                             'Search',
                             style: TextStyle(
-                              fontSize: 18,
-                               fontWeight: FontWeight.w400,
-                              color: Colors.black
-                            ),
+                                fontSize: 18,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.black),
                           ),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30)
-                          ),
-                          onPressed: () {
-
-                          },
+                              borderRadius: BorderRadius.circular(30)),
+                          onPressed: () {},
                           color: Colors.grey[200],
                         )
                       ],
                     ),
                   ),
                   Container(
-                    padding: EdgeInsets.only(
-                      bottom: height(context) * 0.02
-                    ),
+                    padding: EdgeInsets.only(bottom: height(context) * 0.02),
                     child: FlatButton(
                       onPressed: () {
                         //TODO
@@ -120,13 +106,11 @@ class _PickUpLocationState extends State<PickUpLocation> {
                         'CONFIRM PICK-UP',
                         style: TextStyle(
                           color: Colors.white,
-
                         ),
                       ),
                       color: Colors.black,
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 100, vertical: 15
-                      ),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 100, vertical: 15),
                     ),
                   )
                 ],
