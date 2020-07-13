@@ -15,7 +15,7 @@ class LocationModel extends ChangeNotifier {
       new Place(formattedAddress: "", placeId: "", name: "");
   Place dropOffLocationInfo =
       new Place(formattedAddress: "", placeId: "", name: "");
-  GoogleMapController mapController;
+  GoogleMapController mapController; //FIXME What is the use of this controller??
   List<Driver> nearbyDrivers = new List();
   Timer timer;
 
