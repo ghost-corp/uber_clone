@@ -31,7 +31,12 @@ class LocationModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void getOverViewPolyLines() async {
+  void resetOverviewLine() {
+    overviewLines = new List();
+    notifyListeners();
+  }
+
+  Future<bool> getOverViewPolyLines() async {
     List<LatLng> coordinates = await PolylineApi.getPolyLines(
         LatLng(pickUpLocationInfo.latitude, pickUpLocationInfo.longitude),
         LatLng(dropOffLocationInfo.latitude, dropOffLocationInfo.longitude));
@@ -39,9 +44,14 @@ class LocationModel extends ChangeNotifier {
       coordinates.insert(
           0, LatLng(pickUpLocationInfo.latitude, pickUpLocationInfo.longitude));
       Polyline line = Polyline(
-          polylineId: PolylineId("trip_overview"), points: coordinates);
+          polylineId: PolylineId("trip_overview"),
+          points: coordinates,
+          width: 3);
       overviewLines.add(line);
       notifyListeners();
+      return true;
+    } else {
+      return false;
     }
   }
 
