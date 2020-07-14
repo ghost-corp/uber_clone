@@ -21,7 +21,14 @@ class SearchApi {
       print(response.body);
       if (formattedResponse['status'] == "OK") {
         for (int x = 0; x < formattedResponse['candidates'].length; x++) {
-          searchResult.add(Place.fromJson(formattedResponse['candidates'][x]));
+          Place temp = Place.fromJson(formattedResponse['candidates'][x]);
+          temp.latitude = Provider.of<LocationModel>(context, listen: false)
+              .currentLocation
+              .latitude;
+          temp.longitude = Provider.of<LocationModel>(context, listen: false)
+              .currentLocation
+              .longitude;
+          searchResult.add(temp);
         }
         return searchResult;
       } else {
@@ -46,6 +53,8 @@ class SearchApi {
                 ['formatted_address'],
             name: formattedResponse['results'][0]['formatted_address'],
             placeId: formattedResponse['results'][0]['place_id']);
+        searchResult.latitude = coordinates.latitude;
+        searchResult.longitude = coordinates.longitude;
         return searchResult;
       } else {
         return null;
@@ -60,8 +69,15 @@ class Place {
   String formattedAddress;
   String name;
   String placeId;
+  double latitude;
+  double longitude;
 
-  Place({this.placeId, this.name, this.formattedAddress});
+  Place(
+      {this.placeId = "",
+      this.name = "",
+      this.formattedAddress = "",
+      this.latitude = 0.0,
+      this.longitude = 0.0});
 
   factory Place.fromJson(Map<String, dynamic> json) {
     return Place(
