@@ -35,7 +35,8 @@ class MyApp extends StatelessWidget {
       title: 'Uber Clone',
       theme: ThemeData(primaryColor: Colors.black, accentColor: Colors.black),
 //      home: WelcomePage(title: 'Uber'),
-      home: HomePage(),
+//      home: HomePage(),
+      initialRoute: "home_page",
       routes: {
         "phone_sign_up": (context) => PhoneNumber(),
         "phone_verification_page": (context) => VerificationPage(),
@@ -44,7 +45,8 @@ class MyApp extends StatelessWidget {
         "settings": (context) => Settings(),
         "payment": (context) => Payment(),
         "where_to": (context) => WhereToScreen(),
-        "pickup_location": (context) => PickUpLocation()
+        "pickup_location": (context) => PickUpLocation(),
+        "home_page": (context) => HomePage()
       },
     );
   }

@@ -19,6 +19,7 @@ class _PickUpLocationState extends State<PickUpLocation> {
   StreamSubscription searchStream;
   int buildCount = 0;
   bool fetchingInfo = false;
+  GlobalKey mapKey = new GlobalKey();
 
   void getSearchResult(LatLng location) {
     setState(() {
@@ -43,70 +44,87 @@ class _PickUpLocationState extends State<PickUpLocation> {
   }
 
   @override
+  void dispose() {
+    if (searchStream != null) {
+      searchStream.cancel();
+    }
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     //set markerLocation and pickupSpot on first build only to allow it to be changed later on
     if (buildCount == 0) {
-      pickUpSpot = Provider.of<LocationModel>(context).pickUpLocationInfo;
+      pickUpSpot =
+          Provider.of<LocationModel>(context, listen: false).pickUpLocationInfo;
       markerLocation = LatLng(
-          Provider.of<LocationModel>(context).currentLocation.latitude,
-          Provider.of<LocationModel>(context).currentLocation.longitude);
+          Provider.of<LocationModel>(context, listen: false)
+              .currentLocation
+              .latitude,
+          Provider.of<LocationModel>(context, listen: false)
+              .currentLocation
+              .longitude);
     }
     if (buildCount < 1) {
       buildCount++;
     }
 
-    if (Provider.of<LocationModel>(context).currentLocation == null) {
+    if (Provider.of<LocationModel>(context, listen: false).currentLocation ==
+        null) {
       return Container();
     }
 
     return Scaffold(
-      body: Stack(
+      body: Column(
         children: <Widget>[
-          Container(
-            height: height(context),
-            width: width(context),
-          ),
-          GoogleMap(
-            onMapCreated: (GoogleMapController controller) {
-              mapController = controller;
-            },
-            initialCameraPosition: CameraPosition(
-                target:
-                    LatLng(markerLocation.latitude, markerLocation.longitude),
-                zoom: 16.0),
-            trafficEnabled: false,
-            onCameraMove: (center) {
-              setState(() {
-                markerLocation = LatLng(
-                    center.toMap()['target'][0], center.toMap()['target'][1]);
-              });
-            },
-            onCameraIdle: () {
-              getSearchResult(markerLocation);
-            },
-            myLocationButtonEnabled: true,
-            zoomControlsEnabled: false,
-            markers: Set<Marker>.of(<Marker>[
-              Marker(
-                  markerId: MarkerId("1"),
-                  icon: BitmapDescriptor.defaultMarkerWithHue(
-                      BitmapDescriptor.hueAzure),
-                  position: markerLocation)
-            ]),
-          ),
-          Align(
-            alignment: Alignment.topLeft,
-            child: Padding(
-              padding: EdgeInsets.only(top: 30, left: 5),
-              child: IconButton(
-                icon: Icon(
-                  Icons.arrow_back,
-                  color: Colors.black,
+          Expanded(
+            child: Stack(
+              children: <Widget>[
+                GoogleMap(
+                  key: mapKey,
+                  onMapCreated: (GoogleMapController controller) {
+                    mapController = controller;
+                  },
+                  initialCameraPosition: CameraPosition(
+                      target: LatLng(
+                          markerLocation.latitude, markerLocation.longitude),
+                      zoom: 16.0),
+                  trafficEnabled: false,
+                  onCameraMove: (center) {
+                    setState(() {
+                      markerLocation = LatLng(center.toMap()['target'][0],
+                          center.toMap()['target'][1]);
+                    });
+                  },
+                  onCameraIdle: () {
+                    getSearchResult(markerLocation);
+                  },
+                  myLocationButtonEnabled: true,
+                  zoomControlsEnabled: false,
+                  markers: Set<Marker>.of(<Marker>[
+                    Marker(
+                        markerId: MarkerId("1"),
+                        icon: BitmapDescriptor.defaultMarkerWithHue(
+                            BitmapDescriptor.hueAzure),
+                        position: markerLocation)
+                  ]),
                 ),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
+                Align(
+                  alignment: Alignment.topLeft,
+                  child: Padding(
+                    padding: EdgeInsets.only(top: 30, left: 5),
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.arrow_back,
+                        color: Colors.black,
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
+                )
+              ],
             ),
           ),
           Align(
@@ -174,6 +192,10 @@ class _PickUpLocationState extends State<PickUpLocation> {
                     child: FlatButton(
                       onPressed: () {
                         //TODO
+                        Provider.of<LocationModel>(context, listen: false)
+                            .setPickupLocationInfo(pickUpSpot);
+                        Navigator.popUntil(
+                            context, ModalRoute.withName('home_page'));
                       },
                       child: Text(
                         'CONFIRM PICK-UP',
