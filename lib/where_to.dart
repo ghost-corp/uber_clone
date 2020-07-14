@@ -18,6 +18,7 @@ class _WhereToScreenState extends State<WhereToScreen> {
   StreamSubscription searchStream;
   TextEditingController controller = new TextEditingController();
   TextEditingController destinationController = new TextEditingController();
+  GlobalKey mapKey = new GlobalKey();
 
   void getSearchResult(BuildContext context, String searchKey) {
     if (searchStream != null) {
@@ -37,6 +38,15 @@ class _WhereToScreenState extends State<WhereToScreen> {
   }
 
   @override
+  void dispose() {
+    if (searchStream != null) {
+      searchStream.cancel();
+    }
+    searchStream.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -47,8 +57,16 @@ class _WhereToScreenState extends State<WhereToScreen> {
             width: MediaQuery.of(context).size.height,
           ),
           GoogleMap(
-            initialCameraPosition:
-                CameraPosition(target: LatLng(45.521, -122.677433), zoom: 11.0),
+            key: mapKey,
+            initialCameraPosition: CameraPosition(
+                target: LatLng(
+                    Provider.of<LocationModel>(context, listen: false)
+                        .currentLocation
+                        .latitude,
+                    Provider.of<LocationModel>(context, listen: false)
+                        .currentLocation
+                        .longitude),
+                zoom: 11.0),
             compassEnabled: false,
             trafficEnabled: false,
             myLocationEnabled: true,
