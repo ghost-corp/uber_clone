@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:uber_clone/confirm_screen.dart';
 import 'package:uber_clone/discount.dart';
 import 'package:uber_clone/get_moving.dart';
 import 'package:uber_clone/home.dart';
@@ -46,7 +47,8 @@ class MyApp extends StatelessWidget {
         "payment": (context) => Payment(),
         "where_to": (context) => WhereToScreen(),
         "pickup_location": (context) => PickUpLocation(),
-        "home_page": (context) => HomePage()
+        "home_page": (context) => HomePage(),
+        "confirm_screen": (context) => ConfirmPickUpScreen()
       },
     );
   }
