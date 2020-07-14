@@ -194,8 +194,7 @@ class _PickUpLocationState extends State<PickUpLocation> {
                         //TODO
                         Provider.of<LocationModel>(context, listen: false)
                             .setPickupLocationInfo(pickUpSpot);
-                        Navigator.popUntil(
-                            context, ModalRoute.withName('home_page'));
+                        Navigator.of(context).pushNamed("confirm_screen");
                       },
                       child: Text(
                         'CONFIRM PICK-UP',
