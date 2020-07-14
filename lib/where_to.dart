@@ -220,9 +220,9 @@ class _WhereToScreenState extends State<WhereToScreen> {
                                 onTap: () {
                                   destinationController.clear();
                                   Provider.of<LocationModel>(context,
-                                              listen: false)
-                                          .dropOffLocationInfo =
-                                      searchResult[count];
+                                          listen: false)
+                                      .setDropOffLocationInfo(
+                                          searchResult[count]);
                                   print('drop off location');
                                   print(
                                       '${Provider.of<LocationModel>(context, listen: false).dropOffLocationInfo.formattedAddress}');

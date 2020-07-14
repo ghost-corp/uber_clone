@@ -191,10 +191,13 @@ class _PickUpLocationState extends State<PickUpLocation> {
                     padding: EdgeInsets.only(bottom: height(context) * 0.02),
                     child: FlatButton(
                       onPressed: () {
-                        //TODO
-                        Provider.of<LocationModel>(context, listen: false)
-                            .setPickupLocationInfo(pickUpSpot);
-                        Navigator.of(context).pushNamed("confirm_screen");
+                        if (fetchingInfo != true) {
+                          Provider.of<LocationModel>(context, listen: false)
+                              .setPickupLocationInfo(pickUpSpot);
+                          Provider.of<LocationModel>(context, listen: false)
+                              .resetOverviewLine();
+                          Navigator.of(context).pushNamed("confirm_screen");
+                        }
                       },
                       child: Text(
                         'CONFIRM PICK-UP',

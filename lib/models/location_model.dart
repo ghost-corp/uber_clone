@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:uber_clone/api/polyline_api.dart';
 import 'package:uber_clone/api/search_api.dart';
 import 'package:uber_clone/models/driver_model.dart';
 
@@ -14,14 +15,44 @@ class LocationModel extends ChangeNotifier {
   Place dropOffLocationInfo = new Place();
   List<Driver> nearbyDrivers = new List();
   Timer timer;
+  List<Polyline> overviewLines = new List();
 
   LocationModel() {
     setLocation();
   }
 
   void setPickupLocationInfo(Place location) {
+    pickUpLocationInfo = location;
+    notifyListeners();
+  }
+
+  void setDropOffLocationInfo(Place location) {
     dropOffLocationInfo = location;
     notifyListeners();
+  }
+
+  void resetOverviewLine() {
+    overviewLines = new List();
+    notifyListeners();
+  }
+
+  Future<bool> getOverViewPolyLines() async {
+    List<LatLng> coordinates = await PolylineApi.getPolyLines(
+        LatLng(pickUpLocationInfo.latitude, pickUpLocationInfo.longitude),
+        LatLng(dropOffLocationInfo.latitude, dropOffLocationInfo.longitude));
+    if (coordinates != null) {
+      coordinates.insert(
+          0, LatLng(pickUpLocationInfo.latitude, pickUpLocationInfo.longitude));
+      Polyline line = Polyline(
+          polylineId: PolylineId("trip_overview"),
+          points: coordinates,
+          width: 3);
+      overviewLines.add(line);
+      notifyListeners();
+      return true;
+    } else {
+      return false;
+    }
   }
 
   void setLocation() async {
