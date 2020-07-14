@@ -10,10 +10,8 @@ class LocationModel extends ChangeNotifier {
   bool serviceEnabled;
   PermissionStatus permissionGranted;
   LocationData currentLocation;
-  Place pickUpLocationInfo =
-      new Place(formattedAddress: "", placeId: "", name: "");
-  Place dropOffLocationInfo =
-      new Place(formattedAddress: "", placeId: "", name: "");
+  Place pickUpLocationInfo = new Place();
+  Place dropOffLocationInfo = new Place();
   List<Driver> nearbyDrivers = new List();
   Timer timer;
 
