@@ -11,6 +11,7 @@ class LocationModel extends ChangeNotifier {
   bool serviceEnabled;
   PermissionStatus permissionGranted;
   LocationData currentLocation;
+  Place currentLocationInfo = new Place();
   Place pickUpLocationInfo = new Place();
   Place dropOffLocationInfo = new Place();
   List<Driver> nearbyDrivers = new List();
@@ -76,7 +77,7 @@ class LocationModel extends ChangeNotifier {
 
     //get current user location
     currentLocation = await location.getLocation();
-    pickUpLocationInfo = await SearchApi.convertCoordinatesToAddress(
+    currentLocationInfo = await SearchApi.convertCoordinatesToAddress(
         LatLng(currentLocation.latitude, currentLocation.longitude));
     nearbyDrivers = DriverModel.getDummyDrivers(
         LatLng(currentLocation.latitude, currentLocation.longitude));

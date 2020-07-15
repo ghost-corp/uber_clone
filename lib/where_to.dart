@@ -145,7 +145,7 @@ class _WhereToScreenState extends State<WhereToScreen> {
                               child: Consumer<LocationModel>(
                                 builder: (context, locationModel, _) {
                                   controller.text = locationModel
-                                      .pickUpLocationInfo.formattedAddress;
+                                      .currentLocationInfo.formattedAddress;
                                   return TextField(
                                     controller: controller,
                                     onTap: () {
