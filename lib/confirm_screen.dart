@@ -142,8 +142,9 @@ class _ConfirmPickUpScreenState extends State<ConfirmPickUpScreen> {
                       key: mapKey,
                       onMapCreated: (controller) {
                         mapController = controller;
-                        focusMapOnBound(controller);
+                        //delay is necessary to allow map to be completely built first before animating
                         Timer(Duration(seconds: 1), () {
+                          focusMapOnBound(controller);
                           if (locationModel.overviewLines.length > 0) {
                             controller.showMarkerInfoWindow(MarkerId("drop"));
                           }
