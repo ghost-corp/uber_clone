@@ -3,6 +3,8 @@ import 'package:http/http.dart' as http;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:convert';
 
+String timeOfArrival = "";
+
 class PolylineApi {
   static Future<List<LatLng>> getPolyLines(
       LatLng pickUp, LatLng dropOff) async {
@@ -16,6 +18,8 @@ class PolylineApi {
             precision: 5,
             encodedString: json.decode(response.body)['routes'][0]
                 ['overview_polyline']['points']);
+        timeOfArrival = json.decode(response.body)['routes'][0]['legs'][0]
+            ['duration']['text'];
         return coordinatesConverter(polyline);
       } else {
         return null;
