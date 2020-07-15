@@ -87,7 +87,7 @@ class LocationModel extends ChangeNotifier {
     timer = Timer.periodic(Duration(seconds: 30), (timer) async {
       print("updating location");
       currentLocation = await location.getLocation();
-      pickUpLocationInfo = await SearchApi.convertCoordinatesToAddress(
+      currentLocationInfo = await SearchApi.convertCoordinatesToAddress(
           LatLng(currentLocation.latitude, currentLocation.longitude));
       notifyListeners();
     });

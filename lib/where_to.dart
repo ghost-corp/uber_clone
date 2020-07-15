@@ -42,7 +42,6 @@ class _WhereToScreenState extends State<WhereToScreen> {
     if (searchStream != null) {
       searchStream.cancel();
     }
-    searchStream.cancel();
     super.dispose();
   }
 
