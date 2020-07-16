@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_map_polyutil/google_map_polyutil.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:uber_clone/api/polyline_api.dart';
@@ -20,16 +22,61 @@ class LocationModel extends ChangeNotifier {
   Timer timer;
   List<Polyline> overviewLines = new List();
   List<Polyline> navLines = new List();
+  List<LatLng> navCoords = new List();
   List<Step> steps = new List();
-//  List<Step> nextThreeSteps = new List();
+  List<Step> nextThreeSteps = new List();
   MapMode mapMode = MapMode.NearestDriver;
+  StreamSubscription locationStream;
 
   LocationModel() {
     setLocation();
   }
 
-  void setMapMode(MapMode mode) {
+  void setMapMode(MapMode mode) async {
     mapMode = mode;
+    if (mode == MapMode.DestinationNavigation) {
+      timer.cancel();
+      await location.changeSettings(accuracy: LocationAccuracy.navigation);
+      locationStream = location.onLocationChanged.listen((location) async {
+        currentLocation = location;
+        bool onPath = false;
+        bool onEdge = false;
+        for (int x = 0; x < steps.length; x++) {
+          onPath = await GoogleMapPolyUtil.isLocationOnPath(
+              point: LatLng(location.latitude, location.longitude),
+              polygon: steps[x].coords,
+              geodesic: true,
+              tolerance: 5.5);
+          notifyListeners();
+          onEdge = await GoogleMapPolyUtil.isLocationOnEdge(
+              point: LatLng(location.latitude, location.longitude),
+              polygon: steps[x].coords,
+              geodesic: true,
+              tolerance: 5.5);
+          if (onPath == true && onEdge == true) {
+            nextThreeSteps = new List();
+            print("we are losing charlie...........$x}");
+            for (int y = x; y < x + 3; y++) {
+              if (y < steps.length) {
+                nextThreeSteps.add(steps[y]);
+              }
+            }
+            notifyListeners();
+            break;
+          }
+        }
+        notifyListeners();
+      });
+    } else if (mode == MapMode.NearestDriver) {
+      await location.changeSettings(accuracy: LocationAccuracy.navigation);
+      timer = Timer.periodic(Duration(seconds: 30), (timer) async {
+        currentLocation = await location.getLocation();
+        currentLocationInfo = await SearchApi.convertCoordinatesToAddress(
+            LatLng(currentLocation.latitude, currentLocation.longitude));
+        notifyListeners();
+      });
+      locationStream.cancel();
+    }
     notifyListeners();
   }
 
@@ -82,7 +129,9 @@ class LocationModel extends ChangeNotifier {
           width: 15);
       overviewLines.add(line);
       navLines.add(navLine);
+      navCoords = coordinates;
       steps = result['steps'];
+      nextThreeSteps.add(steps[0]);
       notifyListeners();
       return true;
     } else {
@@ -92,6 +141,7 @@ class LocationModel extends ChangeNotifier {
 
   void setLocation() async {
     //checks if location service is enabled and Enable service if disabled
+    await location.changeSettings(accuracy: LocationAccuracy.navigation);
     serviceEnabled = await location.serviceEnabled();
     if (!serviceEnabled) {
       serviceEnabled = await location.requestService();

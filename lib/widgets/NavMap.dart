@@ -16,11 +16,15 @@ class NavMapState extends State<NavMap> {
   StreamSubscription polyLineFetchStream;
   GoogleMapController mapController;
   bool fetchSuccess;
+  StreamSubscription sub;
 
   @override
   void dispose() {
     if (polyLineFetchStream != null) {
       polyLineFetchStream.cancel();
+    }
+    if (sub != null) {
+      sub.cancel();
     }
     super.dispose();
   }
@@ -32,15 +36,11 @@ class NavMapState extends State<NavMap> {
         //markers for both pickup and dropoff locations
         List<Marker> markers = new List();
         Marker pickupMarker = new Marker(
-            markerId: MarkerId("pickupMarker"),
+            markerId: MarkerId("currentLocation"),
             icon: BitmapDescriptor.defaultMarkerWithHue(
                 BitmapDescriptor.hueAzure),
-            infoWindow: InfoWindow(
-                title: "Pickup Location",
-                snippet:
-                    "${locationModel.pickUpLocationInfo.formattedAddress}"),
-            position: LatLng(locationModel.pickUpLocationInfo.latitude,
-                locationModel.pickUpLocationInfo.longitude));
+            position: LatLng(locationModel.currentLocation.latitude,
+                locationModel.currentLocation.longitude));
 
         Marker dropOffMarker = new Marker(
             markerId: MarkerId("drop"),
@@ -58,45 +58,62 @@ class NavMapState extends State<NavMap> {
 
         // the focusMapOnBound method focuses the map on the overview polyline
         focusMapOnBound(GoogleMapController controller) async {
-          int count = 0;
+          if (locationModel.nextThreeSteps.length == 0) {
+            return;
+          }
           LatLngBounds bounds = new LatLngBounds(
               southwest: calcSouthWestBound(
-                  locationModel.steps[count].coords[0],
-                  locationModel.steps[count]
-                      .coords[locationModel.steps[count].coords.length - 1]),
+                  locationModel.nextThreeSteps[0].coords[0],
+                  locationModel.nextThreeSteps[0].coords[
+                      locationModel.nextThreeSteps[0].coords.length - 1]),
               northeast: calcNorthEastBound(
-                  locationModel.steps[count].coords[0],
-                  locationModel.steps[count]
-                      .coords[locationModel.steps[count].coords.length - 1]));
-          print(bounds.toJson());
+                  locationModel.nextThreeSteps[0].coords[0],
+                  locationModel.nextThreeSteps[0].coords[
+                      locationModel.nextThreeSteps[0].coords.length - 1]));
           CameraUpdate update = CameraUpdate.newLatLngBounds(bounds, 10);
           await controller.animateCamera(update);
           await controller.animateCamera(CameraUpdate.newCameraPosition(
               CameraPosition(
                   target: calcCenter(
-                      locationModel.steps[count].coords[0].latitude,
-                      locationModel.steps[count].coords[0].longitude,
+                      locationModel.nextThreeSteps[0].coords[0].latitude,
+                      locationModel.nextThreeSteps[0].coords[0].longitude,
                       locationModel
-                          .steps[count]
-                          .coords[locationModel.steps[count].coords.length - 1]
+                          .nextThreeSteps[0]
+                          .coords[
+                              locationModel.nextThreeSteps[0].coords.length - 1]
                           .latitude,
                       locationModel
-                          .steps[count]
-                          .coords[locationModel.steps[count].coords.length - 1]
+                          .nextThreeSteps[0]
+                          .coords[
+                              locationModel.nextThreeSteps[0].coords.length - 1]
                           .longitude),
-                  zoom: calcZoom(locationModel.steps[count].distanceKm),
+                  zoom: calcZoom(locationModel.nextThreeSteps[0].distanceKm),
                   bearing: calcBearing(
-                      locationModel.steps[count].coords[0].latitude,
-                      locationModel.steps[count].coords[0].longitude,
+                      locationModel.nextThreeSteps[0].coords[0].latitude,
+                      locationModel.nextThreeSteps[0].coords[0].longitude,
                       locationModel
-                          .steps[count]
-                          .coords[locationModel.steps[count].coords.length - 1]
+                          .nextThreeSteps[0]
+                          .coords[
+                              locationModel.nextThreeSteps[0].coords.length - 1]
                           .latitude,
                       locationModel
-                          .steps[count]
-                          .coords[locationModel.steps[count].coords.length - 1]
+                          .nextThreeSteps[0]
+                          .coords[
+                              locationModel.nextThreeSteps[0].coords.length - 1]
                           .longitude))));
         }
+
+        if (sub != null) {
+          sub.cancel();
+        }
+        sub = Provider.of<LocationModel>(context)
+            .location
+            .onLocationChanged
+            .listen((event) {
+          try {
+            focusMapOnBound(mapController);
+          } catch (err) {}
+        });
 
         if (locationModel.overviewLines.length == 0) {
           //the polyLineFetchStream continuously tries to get the polyline in case of a network fetch error
@@ -207,8 +224,7 @@ LatLng calcCenter(lat1, lng1, lat2, lng2) {
 }
 
 double calcZoom(double distance) {
-  double zoom = 16 - Math.log(distance * 0.6) / Math.log(2);
-  print("$zoom.................................");
+  double zoom = 16 - Math.log(distance) / Math.log(2);
   return zoom;
 }
 
