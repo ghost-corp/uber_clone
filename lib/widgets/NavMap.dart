@@ -5,9 +5,12 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:uber_clone/api/polyline_api.dart';
 import 'package:uber_clone/models/location_model.dart';
+import 'package:uber_clone/models/location_model.dart' as loc;
 import 'NavInfo.dart';
 
 class NavMap extends StatefulWidget {
+  final VoidCallback onMenuTap;
+  NavMap({this.onMenuTap});
   @override
   State createState() => NavMapState();
 }
@@ -17,6 +20,14 @@ class NavMapState extends State<NavMap> {
   GoogleMapController mapController;
   bool fetchSuccess;
   StreamSubscription sub;
+  bool shouldRecenter = true;
+  VoidCallback onMenuTap;
+
+  @override
+  void initState() {
+    onMenuTap = widget.onMenuTap;
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -56,7 +67,7 @@ class NavMapState extends State<NavMap> {
         markers.add(pickupMarker);
         markers.add(dropOffMarker);
 
-        // the focusMapOnBound method focuses the map on the overview polyline
+        // the focusMapOnBound method focuses the map on the current step/path of the driver/passenger
         focusMapOnBound(GoogleMapController controller) async {
           if (locationModel.nextThreeSteps.length == 0) {
             return;
@@ -70,50 +81,53 @@ class NavMapState extends State<NavMap> {
                   locationModel.nextThreeSteps[0].coords[0],
                   locationModel.nextThreeSteps[0].coords[
                       locationModel.nextThreeSteps[0].coords.length - 1]));
-          CameraUpdate update = CameraUpdate.newLatLngBounds(bounds, 10);
-          await controller.animateCamera(update);
-          await controller.animateCamera(CameraUpdate.newCameraPosition(
-              CameraPosition(
-                  target: calcCenter(
-                      locationModel.nextThreeSteps[0].coords[0].latitude,
-                      locationModel.nextThreeSteps[0].coords[0].longitude,
-                      locationModel
-                          .nextThreeSteps[0]
-                          .coords[
-                              locationModel.nextThreeSteps[0].coords.length - 1]
-                          .latitude,
-                      locationModel
-                          .nextThreeSteps[0]
-                          .coords[
-                              locationModel.nextThreeSteps[0].coords.length - 1]
-                          .longitude),
-                  zoom: calcZoom(locationModel.nextThreeSteps[0].distanceKm),
-                  bearing: calcBearing(
-                      locationModel.nextThreeSteps[0].coords[0].latitude,
-                      locationModel.nextThreeSteps[0].coords[0].longitude,
-                      locationModel
-                          .nextThreeSteps[0]
-                          .coords[
-                              locationModel.nextThreeSteps[0].coords.length - 1]
-                          .latitude,
-                      locationModel
-                          .nextThreeSteps[0]
-                          .coords[
-                              locationModel.nextThreeSteps[0].coords.length - 1]
-                          .longitude))));
+          if (shouldRecenter == true) {
+            CameraUpdate update = CameraUpdate.newLatLngBounds(bounds, 10);
+            await controller.animateCamera(update);
+            await controller.animateCamera(CameraUpdate.newCameraPosition(
+                CameraPosition(
+                    target: calcCenter(
+                        locationModel.nextThreeSteps[0].coords[0].latitude,
+                        locationModel.nextThreeSteps[0].coords[0].longitude,
+                        locationModel
+                            .nextThreeSteps[0]
+                            .coords[
+                                locationModel.nextThreeSteps[0].coords.length -
+                                    1]
+                            .latitude,
+                        locationModel
+                            .nextThreeSteps[0]
+                            .coords[
+                                locationModel.nextThreeSteps[0].coords.length -
+                                    1]
+                            .longitude),
+                    zoom: calcZoom(locationModel.nextThreeSteps[0].distanceKm),
+                    bearing: calcBearing(
+                        locationModel.nextThreeSteps[0].coords[0].latitude,
+                        locationModel.nextThreeSteps[0].coords[0].longitude,
+                        locationModel
+                            .nextThreeSteps[0]
+                            .coords[
+                                locationModel.nextThreeSteps[0].coords.length -
+                                    1]
+                            .latitude,
+                        locationModel
+                            .nextThreeSteps[0]
+                            .coords[locationModel.nextThreeSteps[0].coords.length - 1]
+                            .longitude))));
+          }
         }
 
-        if (sub != null) {
-          sub.cancel();
+        if (sub == null) {
+          sub = Provider.of<LocationModel>(context)
+              .location
+              .onLocationChanged
+              .listen((event) {
+            try {
+              focusMapOnBound(mapController);
+            } catch (err) {}
+          });
         }
-        sub = Provider.of<LocationModel>(context)
-            .location
-            .onLocationChanged
-            .listen((event) {
-          try {
-            focusMapOnBound(mapController);
-          } catch (err) {}
-        });
 
         if (locationModel.overviewLines.length == 0) {
           //the polyLineFetchStream continuously tries to get the polyline in case of a network fetch error
@@ -133,9 +147,36 @@ class NavMapState extends State<NavMap> {
           });
         }
 
+        //closes nav steps
+        loc.Step currentStep;
+        try {
+          currentStep = locationModel.nextThreeSteps[0];
+        } catch (err) {
+          print(err);
+        }
+
+        loc.Step nextStep;
+        try {
+          nextStep = locationModel.nextThreeSteps[1];
+        } catch (err) {
+          print(err);
+        }
+
+        loc.Step futureStep;
+        try {
+          futureStep = locationModel.nextThreeSteps[2];
+        } catch (err) {
+          print(err);
+        }
+
         return Stack(
           children: <Widget>[
             GoogleMap(
+              onCameraMove: (_) {
+                setState(() {
+                  shouldRecenter = false;
+                });
+              },
               onMapCreated: (controller) {
                 mapController = controller;
                 //delay is necessary to allow map to be completely built first before animating
@@ -169,9 +210,10 @@ class NavMapState extends State<NavMap> {
                 child: Align(
                   alignment: Alignment.topCenter,
                   child: NavInfo(
-                    currentStep: locationModel.steps[1],
-                    futureStep: locationModel.steps[2],
-                    nextStep: locationModel.steps[3],
+                    currentStep: currentStep,
+                    futureStep: futureStep,
+                    nextStep: nextStep,
+                    onMenuTap: onMenuTap,
                   ),
                 ),
               ),
@@ -182,6 +224,9 @@ class NavMapState extends State<NavMap> {
                 padding: EdgeInsets.all(20),
                 child: GestureDetector(
                   onTap: () {
+                    setState(() {
+                      shouldRecenter = true;
+                    });
                     focusMapOnBound(mapController);
                   },
                   child: Card(

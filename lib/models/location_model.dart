@@ -26,7 +26,6 @@ class LocationModel extends ChangeNotifier {
   List<Step> steps = new List();
   List<Step> nextThreeSteps = new List();
   MapMode mapMode = MapMode.NearestDriver;
-  StreamSubscription locationStream;
 
   LocationModel() {
     setLocation();
@@ -36,28 +35,32 @@ class LocationModel extends ChangeNotifier {
     mapMode = mode;
     if (mode == MapMode.DestinationNavigation) {
       timer.cancel();
-      await location.changeSettings(accuracy: LocationAccuracy.navigation);
-      locationStream = location.onLocationChanged.listen((location) async {
-        currentLocation = location;
+      timer = Timer.periodic(Duration(seconds: 4), (timer) async {
+        currentLocation = await location.getLocation();
         bool onPath = false;
         bool onEdge = false;
         for (int x = 0; x < steps.length; x++) {
           onPath = await GoogleMapPolyUtil.isLocationOnPath(
-              point: LatLng(location.latitude, location.longitude),
+              point:
+                  LatLng(currentLocation.latitude, currentLocation.longitude),
               polygon: steps[x].coords,
               geodesic: true,
-              tolerance: 5.5);
+              tolerance: 6);
           notifyListeners();
           onEdge = await GoogleMapPolyUtil.isLocationOnEdge(
-              point: LatLng(location.latitude, location.longitude),
+              point:
+                  LatLng(currentLocation.latitude, currentLocation.longitude),
               polygon: steps[x].coords,
               geodesic: true,
-              tolerance: 5.5);
+              tolerance: 6);
           if (onPath == true && onEdge == true) {
             nextThreeSteps = new List();
             print("we are losing charlie...........$x}");
             for (int y = x; y < x + 3; y++) {
               if (y < steps.length) {
+                try {
+                  print(steps[y].maneuver);
+                } catch (err) {}
                 nextThreeSteps.add(steps[y]);
               }
             }
@@ -69,13 +72,13 @@ class LocationModel extends ChangeNotifier {
       });
     } else if (mode == MapMode.NearestDriver) {
       await location.changeSettings(accuracy: LocationAccuracy.navigation);
+      timer.cancel();
       timer = Timer.periodic(Duration(seconds: 30), (timer) async {
         currentLocation = await location.getLocation();
         currentLocationInfo = await SearchApi.convertCoordinatesToAddress(
             LatLng(currentLocation.latitude, currentLocation.longitude));
         notifyListeners();
       });
-      locationStream.cancel();
     }
     notifyListeners();
   }
@@ -131,7 +134,11 @@ class LocationModel extends ChangeNotifier {
       navLines.add(navLine);
       navCoords = coordinates;
       steps = result['steps'];
-      nextThreeSteps.add(steps[0]);
+      try {
+        nextThreeSteps.add(steps[0]);
+        nextThreeSteps.add(steps[1]);
+        nextThreeSteps.add(steps[2]);
+      } catch (err) {}
       notifyListeners();
       return true;
     } else {

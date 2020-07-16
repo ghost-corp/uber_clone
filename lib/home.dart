@@ -4,9 +4,9 @@ import 'package:provider/provider.dart';
 import 'package:uber_clone/api/polyline_api.dart';
 import 'package:uber_clone/models/location_model.dart';
 import 'package:uber_clone/widgets/NavMap.dart';
+import 'models/location_model.dart';
 
-import 'models/location_model.dart';
-import 'models/location_model.dart';
+GlobalKey<ScaffoldState> key = new GlobalKey();
 
 class HomePage extends StatefulWidget {
   @override
@@ -17,6 +17,7 @@ class HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: key,
       drawer: Container(
         color: Colors.white,
         width: MediaQuery.of(context).size.width * 0.8,
@@ -195,7 +196,11 @@ class HomeBodyState extends State<HomeBody> {
               Consumer<LocationModel>(
                 builder: (context, locationModel, child) {
                   if (locationModel.mapMode == MapMode.DestinationNavigation) {
-                    return NavMap();
+                    return NavMap(
+                      onMenuTap: () {
+                        key.currentState.openDrawer();
+                      },
+                    );
                   }
 
                   //creates the nearby location circle
