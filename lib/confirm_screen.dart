@@ -16,6 +16,7 @@ class _ConfirmPickUpScreenState extends State<ConfirmPickUpScreen> {
   StreamSubscription polyLineFetchStream;
   GoogleMapController mapController;
   bool fetchSuccess;
+  bool confirmedButtonPressed = false;
 
   @override
   void dispose() {
@@ -23,40 +24,6 @@ class _ConfirmPickUpScreenState extends State<ConfirmPickUpScreen> {
       polyLineFetchStream.cancel();
     }
     super.dispose();
-  }
-
-  LatLng calcNorthEastBound(LatLng pos1, LatLng pos2) {
-    double lat;
-    double lng;
-    if (pos1.latitude > pos2.latitude) {
-      lat = pos1.latitude;
-    } else {
-      lat = pos2.latitude;
-    }
-
-    if (pos1.longitude > pos2.longitude) {
-      lng = pos1.longitude;
-    } else {
-      lng = pos2.longitude;
-    }
-    return LatLng(lat, lng);
-  }
-
-  LatLng calcSouthWestBound(LatLng pos1, LatLng pos2) {
-    double lat;
-    double lng;
-    if (pos1.latitude < pos2.latitude) {
-      lat = pos1.latitude;
-    } else {
-      lat = pos2.latitude;
-    }
-
-    if (pos1.longitude < pos2.longitude) {
-      lng = pos1.longitude;
-    } else {
-      lng = pos2.longitude;
-    }
-    return LatLng(lat, lng);
   }
 
   @override
@@ -193,7 +160,7 @@ class _ConfirmPickUpScreenState extends State<ConfirmPickUpScreen> {
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
-              height: height(context) * 0.4,
+              height: height(context) * 0.35,
               width: width(context),
               color: Colors.white,
               child: Column(
@@ -212,125 +179,172 @@ class _ConfirmPickUpScreenState extends State<ConfirmPickUpScreen> {
                       return Divider();
                     },
                   ),
-                  Container(
-                    height: height(context) * 0.1,
-                    width: width(context),
-                    padding: EdgeInsets.only(top: 10, bottom: 10),
-//                    color: Colors.grey[200],
-                    child: Row(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Container(
-//                          height: 50, width: 50,
-                              color: Colors.transparent,
-                              child: Image.asset(
-                                'images/cars.png',
-                                fit: BoxFit.fill,
-                              ),
-                            ),
-                            Container(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  Row(
-                                    children: <Widget>[
-                                      Text(
-                                        'UberX  ',
-                                        style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w700),
-                                      ),
-                                      Icon(
-                                        Icons.person,
-                                        size: 14,
-                                      ),
-                                      Text(
-                                        '4',
-                                        style: TextStyle(
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.w700),
-                                      )
-                                    ],
+                  Expanded(
+                    child: Container(
+                      width: width(context),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          Expanded(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[
+                                Expanded(
+                                  flex: 1,
+                                  child: Container(
+                                    color: Colors.transparent,
+                                    child: Image.asset(
+                                      'images/cars.png',
+                                      fit: BoxFit.fill,
+                                    ),
                                   ),
-                                  Text(
-                                    '6:09pm drop-off',
-                                    style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w400),
+                                ),
+                                Expanded(
+                                  flex: 1,
+                                  child: Container(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisSize: MainAxisSize.max,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: <Widget>[
+                                        Row(
+                                          children: <Widget>[
+                                            Text(
+                                              'UberX  ',
+                                              style: TextStyle(
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.w700),
+                                            ),
+                                            Icon(
+                                              Icons.person,
+                                              size: 14,
+                                            ),
+                                            Text(
+                                              '4',
+                                              style: TextStyle(
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.w700),
+                                            )
+                                          ],
+                                        ),
+                                        Text(
+                                          '6:09pm drop-off',
+                                          style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w400),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            padding: EdgeInsets.only(right: 10),
+                            child: Text(
+                              'NGN 850.00',
+                              style: TextStyle(
+                                  fontSize: 19, fontWeight: FontWeight.w600),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                  confirmedButtonPressed
+                      ? LinearProgressIndicator()
+                      : Divider(),
+                  Expanded(
+                    child: Container(
+                      child: Padding(
+                        padding: EdgeInsets.all(10),
+                        child: confirmedButtonPressed
+                            ? Center(
+                                child: Text(
+                                  "Connecting to Driver",
+                                  style: TextStyle(
+                                      color: Colors.grey,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20),
+                                ),
+                              )
+                            : Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  Container(
+                                    width: width(context),
+                                    padding: EdgeInsets.only(bottom: 10),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      mainAxisSize: MainAxisSize.max,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: <Widget>[
+                                        Row(
+                                          children: <Widget>[
+                                            Icon(
+                                              Icons.credit_card,
+                                              size: 24,
+                                              color: Colors.black,
+                                            ),
+                                            Padding(
+                                              padding: EdgeInsets.only(left: 5),
+                                              child: Text(
+                                                'Ride Cash -',
+                                                style: TextStyle(
+                                                    color: Colors.black,
+                                                    fontWeight: FontWeight.w500,
+                                                    fontSize: 18),
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                        Icon(
+                                          Icons.arrow_forward_ios,
+                                          color: Colors.black,
+                                          size: 14,
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: RaisedButton(
+                                      child: Text(
+                                        'Confirm Ride',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 17),
+                                      ),
+                                      color: Colors.black,
+                                      onPressed: () {
+                                        setState(() {
+                                          confirmedButtonPressed = true;
+                                        });
+                                        Timer(Duration(seconds: 3), () {
+                                          Navigator.popUntil(context,
+                                              ModalRoute.withName('home_page'));
+                                          Provider.of<LocationModel>(context,
+                                                  listen: false)
+                                              .setMapMode(MapMode
+                                                  .DestinationNavigation);
+                                        });
+                                      },
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: width(context) * 0.25),
+                                    ),
                                   )
                                 ],
                               ),
-                            ),
-                          ],
-                        ),
-                        Container(
-                          padding: EdgeInsets.only(bottom: 30, right: 10),
-                          child: Text(
-                            'NGN 850.00',
-                            style: TextStyle(
-                                fontSize: 19, fontWeight: FontWeight.w600),
-                          ),
-                        )
-                      ],
+                      ),
                     ),
-                  ),
-                  Divider(),
-                  Container(
-                    padding: EdgeInsets.only(left: 10, right: 10),
-                    height: height(context) * 0.1,
-                    width: width(context),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      mainAxisSize: MainAxisSize.max,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            Icon(
-                              Icons.credit_card,
-                              size: 24,
-                              color: Colors.black,
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(left: 5),
-                              child: Text(
-                                'Ride Cash -',
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 18),
-                              ),
-                            )
-                          ],
-                        ),
-                        Icon(
-                          Icons.arrow_forward_ios,
-                          color: Colors.black,
-                          size: 14,
-                        )
-                      ],
-                    ),
-                  ),
-                  RaisedButton(
-                    child: Text(
-                      'Confirm Ride',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 17),
-                    ),
-                    color: Colors.black,
-                    onPressed: () {},
-                    padding:
-                        EdgeInsets.symmetric(vertical: 15, horizontal: 120),
                   )
                 ],
               ),

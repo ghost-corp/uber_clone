@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:uber_clone/api/polyline_api.dart';
 import 'package:uber_clone/models/location_model.dart';
+import 'package:uber_clone/widgets/NavMap.dart';
+
+import 'models/location_model.dart';
+import 'models/location_model.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -189,6 +194,10 @@ class HomeBodyState extends State<HomeBody> {
             children: <Widget>[
               Consumer<LocationModel>(
                 builder: (context, locationModel, child) {
+                  if (locationModel.mapMode == MapMode.DestinationNavigation) {
+                    return NavMap();
+                  }
+
                   //creates the nearby location circle
                   String circleIdVal = 'nearbyCircle';
                   CircleId circleId = CircleId(circleIdVal);
@@ -240,87 +249,125 @@ class HomeBodyState extends State<HomeBody> {
                   );
                 },
               ),
-              SafeArea(
-                child: Align(
-                  alignment: Alignment.topLeft,
+              Consumer<LocationModel>(
+                builder: (_, locationModel, __) {
+                  if (locationModel.mapMode == MapMode.DestinationNavigation) {
+                    return Container();
+                  }
+                  return SafeArea(
+                    child: Align(
+                      alignment: Alignment.topLeft,
+                      child: Padding(
+                        padding: EdgeInsets.all(10),
+                        child: GestureDetector(
+                          onTap: () {
+                            Scaffold.of(context).openDrawer();
+                          },
+                          child: Icon(
+                            Icons.menu,
+                            size: 35,
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              )
+            ],
+          ),
+        ),
+        Consumer<LocationModel>(
+          builder: (_, locationModel, __) {
+            if (locationModel.mapMode == MapMode.DestinationNavigation) {
+              return Container(
+                padding: EdgeInsets.all(10),
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  children: <Widget>[
+                    Expanded(
+                      child: Text(
+                        locationModel.dropOffLocationInfo.formattedAddress,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    Text("ETA: $timeOfArrival")
+                  ],
+                ),
+              );
+            }
+
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Container(
                   child: Padding(
-                    padding: EdgeInsets.all(10),
-                    child: GestureDetector(
-                      onTap: () {
-                        Scaffold.of(context).openDrawer();
-                      },
-                      child: Icon(
-                        Icons.menu,
-                        size: 35,
+                    padding: EdgeInsets.all(
+                        MediaQuery.of(context).size.height * 0.02),
+                    child: Center(
+                      child: Text(
+                        "Good morning, Abdulmalik",
+                        style: TextStyle(
+                            fontWeight: FontWeight.w400, fontSize: 18),
                       ),
                     ),
                   ),
                 ),
-              )
-            ],
-          ),
-        ),
-        Container(
-          child: Padding(
-            padding: EdgeInsets.all(MediaQuery.of(context).size.height * 0.02),
-            child: Center(
-              child: Text(
-                "Good morning, Abdulmalik",
-                style: TextStyle(fontWeight: FontWeight.w400, fontSize: 18),
-              ),
-            ),
-          ),
-        ),
-        Divider(
-          thickness: 2,
-        ),
-        Padding(
-          padding: EdgeInsets.all(MediaQuery.of(context).size.height * 0.015),
-          child: Center(
-            child: InkWell(
-              onTap: () {
-                Navigator.of(context).pushNamed("where_to");
-              },
-              child: Container(
-                height: MediaQuery.of(context).size.height * 0.06,
-                width: MediaQuery.of(context).size.width * 0.92,
-                color: Colors.grey[300],
-                child: Padding(
-                  padding: EdgeInsets.all(10),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      "Where to?",
-                      style: TextStyle(fontSize: 16),
+                Divider(
+                  thickness: 2,
+                ),
+                Padding(
+                  padding: EdgeInsets.all(
+                      MediaQuery.of(context).size.height * 0.015),
+                  child: Center(
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.of(context).pushNamed("where_to");
+                      },
+                      child: Container(
+                        height: MediaQuery.of(context).size.height * 0.06,
+                        width: MediaQuery.of(context).size.width * 0.92,
+                        color: Colors.grey[300],
+                        child: Padding(
+                          padding: EdgeInsets.all(10),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              "Where to?",
+                              style: TextStyle(fontSize: 16),
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ),
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.only(
-              left: MediaQuery.of(context).size.height * 0.055,
-              bottom: MediaQuery.of(context).size.height * 0.03,
-              top: MediaQuery.of(context).size.height * 0.01),
-          child: Row(
-            children: <Widget>[
-              Icon(
-                Icons.stars,
-                color: Colors.grey,
-                size: MediaQuery.of(context).size.height * 0.05,
-              ),
-              Padding(
-                padding:
-                    EdgeInsets.all(MediaQuery.of(context).size.height * 0.01),
-                child: Text(
-                  "Choose a saved place",
-                  style: TextStyle(fontWeight: FontWeight.w500),
-                ),
-              )
-            ],
-          ),
+                Padding(
+                  padding: EdgeInsets.only(
+                      left: MediaQuery.of(context).size.height * 0.055,
+                      bottom: MediaQuery.of(context).size.height * 0.03,
+                      top: MediaQuery.of(context).size.height * 0.01),
+                  child: Row(
+                    children: <Widget>[
+                      Icon(
+                        Icons.stars,
+                        color: Colors.grey,
+                        size: MediaQuery.of(context).size.height * 0.05,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(
+                            MediaQuery.of(context).size.height * 0.01),
+                        child: Text(
+                          "Choose a saved place",
+                          style: TextStyle(fontWeight: FontWeight.w500),
+                        ),
+                      )
+                    ],
+                  ),
+                )
+              ],
+            );
+          },
         )
       ],
     );

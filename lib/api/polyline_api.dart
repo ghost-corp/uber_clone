@@ -3,11 +3,14 @@ import 'package:http/http.dart' as http;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:convert';
 
+import 'package:uber_clone/models/location_model.dart';
+
 String timeOfArrival = "";
 
 class PolylineApi {
-  static Future<List<LatLng>> getPolyLines(
+  static Future<Map<String, dynamic>> getPolyLines(
       LatLng pickUp, LatLng dropOff) async {
+    Map<String, dynamic> result = new Map();
     try {
       poly.Polyline polyline;
       final response = await http.get(
@@ -20,7 +23,15 @@ class PolylineApi {
                 ['overview_polyline']['points']);
         timeOfArrival = json.decode(response.body)['routes'][0]['legs'][0]
             ['duration']['text'];
-        return coordinatesConverter(polyline);
+        result.putIfAbsent("polyline", () => coordinatesConverter(polyline));
+        List<Step> steps = new List();
+        var stepsTemp =
+            json.decode(response.body)['routes'][0]['legs'][0]['steps'];
+        for (int x = 0; x < stepsTemp.length; x++) {
+          steps.add(Step.fromJson(stepsTemp[x]));
+        }
+        result.putIfAbsent("steps", () => steps);
+        return result;
       } else {
         return null;
       }
@@ -32,6 +43,7 @@ class PolylineApi {
 
   static List<LatLng> coordinatesConverter(poly.Polyline polyline) {
     var points = polyline.decodedCoords;
+    var s = polyline.unit;
     List<LatLng> coordinates = new List();
     points.forEach((element) {
       coordinates.add(LatLng(element[0], element[1]));
