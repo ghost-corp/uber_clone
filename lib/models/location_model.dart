@@ -11,6 +11,7 @@ import 'dart:math' as Math;
 import 'package:polyline/polyline.dart' as poly;
 
 class LocationModel extends ChangeNotifier {
+  //location attributes
   Location location = new Location();
   bool serviceEnabled;
   PermissionStatus permissionGranted;
@@ -20,11 +21,15 @@ class LocationModel extends ChangeNotifier {
   Place dropOffLocationInfo = new Place();
   List<Driver> nearbyDrivers = new List();
   Timer timer;
+
+  //navigation variables
   List<Polyline> overviewLines = new List();
   List<Polyline> navLines = new List();
   List<LatLng> navCoords = new List();
   List<Step> steps = new List();
   List<Step> nextThreeSteps = new List();
+
+  //map mode
   MapMode mapMode = MapMode.NearestDriver;
 
   LocationModel() {
@@ -55,7 +60,7 @@ class LocationModel extends ChangeNotifier {
               tolerance: 6);
           if (onPath == true && onEdge == true) {
             nextThreeSteps = new List();
-            print("we are losing charlie...........$x}");
+            print("User on track");
             for (int y = x; y < x + 3; y++) {
               if (y < steps.length) {
                 try {
@@ -67,6 +72,10 @@ class LocationModel extends ChangeNotifier {
             notifyListeners();
             break;
           }
+        }
+        if (onEdge == false && onEdge == false) {
+          print("re-routing");
+          getOverViewPolyLines(useCurrentLocation: true);
         }
         notifyListeners();
       });
@@ -115,9 +124,11 @@ class LocationModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> getOverViewPolyLines() async {
+  Future<bool> getOverViewPolyLines({bool useCurrentLocation = false}) async {
     var result = await PolylineApi.getPolyLines(
-        LatLng(pickUpLocationInfo.latitude, pickUpLocationInfo.longitude),
+        useCurrentLocation
+            ? LatLng(currentLocation.latitude, currentLocation.longitude)
+            : LatLng(pickUpLocationInfo.latitude, pickUpLocationInfo.longitude),
         LatLng(dropOffLocationInfo.latitude, dropOffLocationInfo.longitude));
     List<LatLng> coordinates = result['polyline'];
     if (coordinates != null) {
@@ -130,15 +141,24 @@ class LocationModel extends ChangeNotifier {
           points: coordinates,
           color: Colors.lightBlueAccent,
           width: 15);
+      overviewLines = new List();
       overviewLines.add(line);
+
+      navLines = new List();
       navLines.add(navLine);
+
+      navCoords = new List();
       navCoords = coordinates;
+
       steps = result['steps'];
+      nextThreeSteps = new List();
       try {
         nextThreeSteps.add(steps[0]);
         nextThreeSteps.add(steps[1]);
         nextThreeSteps.add(steps[2]);
-      } catch (err) {}
+      } catch (err) {
+        print(err);
+      }
       notifyListeners();
       return true;
     } else {

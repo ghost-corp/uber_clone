@@ -172,11 +172,6 @@ class NavMapState extends State<NavMap> {
         return Stack(
           children: <Widget>[
             GoogleMap(
-              onCameraMove: (_) {
-                setState(() {
-                  shouldRecenter = false;
-                });
-              },
               onMapCreated: (controller) {
                 mapController = controller;
                 //delay is necessary to allow map to be completely built first before animating
