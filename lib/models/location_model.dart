@@ -50,14 +50,14 @@ class LocationModel extends ChangeNotifier {
                   LatLng(currentLocation.latitude, currentLocation.longitude),
               polygon: steps[x].coords,
               geodesic: true,
-              tolerance: 6);
+              tolerance: 12);
           notifyListeners();
           onEdge = await GoogleMapPolyUtil.isLocationOnEdge(
               point:
                   LatLng(currentLocation.latitude, currentLocation.longitude),
               polygon: steps[x].coords,
               geodesic: true,
-              tolerance: 6);
+              tolerance: 12);
           if (onPath == true && onEdge == true) {
             nextThreeSteps = new List();
             print("User on track");

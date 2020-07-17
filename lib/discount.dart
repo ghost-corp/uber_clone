@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'home.dart';
+import 'home/home.dart';
 
 class Discount extends StatefulWidget {
   @override
