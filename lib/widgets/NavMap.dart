@@ -3,6 +3,7 @@ import 'dart:math' as Math;
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:uber_clone/api/location_math_api.dart';
 import 'package:uber_clone/api/polyline_api.dart';
 import 'package:uber_clone/models/location_model.dart';
 import 'package:uber_clone/models/location_model.dart' as loc;
@@ -74,11 +75,11 @@ class NavMapState extends State<NavMap> {
             return;
           }
           LatLngBounds bounds = new LatLngBounds(
-              southwest: calcSouthWestBound(
+              southwest: LocationMathApi.calcSouthWestBound(
                   locationModel.nextThreeSteps[0].coords[0],
                   locationModel.nextThreeSteps[0].coords[
                       locationModel.nextThreeSteps[0].coords.length - 1]),
-              northeast: calcNorthEastBound(
+              northeast: LocationMathApi.calcNorthEastBound(
                   locationModel.nextThreeSteps[0].coords[0],
                   locationModel.nextThreeSteps[0].coords[
                       locationModel.nextThreeSteps[0].coords.length - 1]));

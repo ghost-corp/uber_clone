@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:uber_clone/api/location_math_api.dart';
 import 'package:uber_clone/api/polyline_api.dart';
 import 'package:uber_clone/global/screen_size.dart';
 import 'package:provider/provider.dart';
@@ -74,8 +75,10 @@ class _ConfirmPickUpScreenState extends State<ConfirmPickUpScreen> {
                           locationModel.dropOffLocationInfo.latitude,
                           locationModel.dropOffLocationInfo.longitude);
                       LatLngBounds bounds = new LatLngBounds(
-                          southwest: calcSouthWestBound(pickup, dropOff),
-                          northeast: calcNorthEastBound(pickup, dropOff));
+                          southwest: LocationMathApi.calcSouthWestBound(
+                              pickup, dropOff),
+                          northeast: LocationMathApi.calcNorthEastBound(
+                              pickup, dropOff));
                       CameraUpdate update =
                           CameraUpdate.newLatLngBounds(bounds, 100);
                       controller.animateCamera(update);
