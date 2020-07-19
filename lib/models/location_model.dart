@@ -239,6 +239,26 @@ LatLng calcSouthWestBound(LatLng pos1, LatLng pos2) {
   return LatLng(lat, lng);
 }
 
+Driver calculateNearestDriver(LatLng userLocation, List<Driver> drivers) {
+  if (drivers.length == 0) {
+    return null;
+  }
+  Driver nearestDriver = drivers[0];
+  double distance = 0;
+  for (int x = 0; x < drivers.length; x++) {
+    double distanceTemp = getDistanceFromLatLonInKm(
+        userLocation.latitude,
+        userLocation.longitude,
+        drivers[x].liveLocation.latitude,
+        drivers[x].liveLocation.longitude);
+    if (distanceTemp < distance) {
+      distance = distanceTemp;
+      nearestDriver = drivers[x];
+    }
+  }
+  return nearestDriver;
+}
+
 double getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
   var R = 6371; // Radius of the earth in km
   var dLat = deg2rad(lat2 - lat1); // deg2rad below
