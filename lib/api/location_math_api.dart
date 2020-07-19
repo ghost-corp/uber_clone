@@ -58,7 +58,8 @@ class LocationMathApi {
     return nearestDriver;
   }
 
-  static double getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+  static double getDistanceFromLatLonInKm(
+      double lat1, double lon1, double lat2, double lon2) {
     var R = 6371; // Radius of the earth in km
     var dLat = deg2rad(lat2 - lat1); // deg2rad below
     var dLon = deg2rad(lon2 - lon1);

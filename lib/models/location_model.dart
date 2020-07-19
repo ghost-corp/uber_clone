@@ -88,6 +88,8 @@ class LocationModel extends ChangeNotifier {
             LatLng(currentLocation.latitude, currentLocation.longitude));
         notifyListeners();
       });
+    } else if (mode == MapMode.AwaitingDriver) {
+      timer.cancel();
     }
     notifyListeners();
   }
@@ -100,7 +102,7 @@ class LocationModel extends ChangeNotifier {
           nearbyDrivers[x].liveLocation.latitude,
           nearbyDrivers[x].liveLocation.longitude,
           pickUpLocationInfo.latitude,
-          pickUpLocationInfo..longitude);
+          pickUpLocationInfo.longitude);
       if (distance < dist) {
         nearestDriver = nearbyDrivers[x];
         dist = distance;
