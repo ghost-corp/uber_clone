@@ -11,13 +11,18 @@ class DistanceOverview extends StatefulWidget {
   final InfoWindow secondLocationInfoWindow;
   final VoidCallback onPolylineDrawn;
   final AsyncValueGetter<List<Polyline>> getPolyline;
+  final BitmapDescriptor firstLocationMarkerIcon;
+  final BitmapDescriptor secondLocationMarkerIcon;
+
   DistanceOverview(
       {this.firstLocation,
       this.secondLocation,
       this.onPolylineDrawn,
       this.getPolyline,
       this.firstLocationInfoWindow,
-      this.secondLocationInfoWindow});
+      this.secondLocationInfoWindow,
+      this.firstLocationMarkerIcon,
+      this.secondLocationMarkerIcon});
   @override
   State createState() => DistanceOverviewState();
 }
@@ -25,13 +30,16 @@ class DistanceOverview extends StatefulWidget {
 class DistanceOverviewState extends State<DistanceOverview> {
   LatLng firstLocation;
   LatLng secondLocation;
-  List<Polyline> polyline;
   VoidCallback onPolylineDrawn;
   List<Marker> markers = new List();
   AsyncValueGetter<List<Polyline>> getPolyline;
+  BitmapDescriptor firstLocationMarkerIcon;
+  BitmapDescriptor secondLocationMarkerIcon;
   GoogleMapController mapController;
   InfoWindow firstLocationInfoWindow;
   InfoWindow secondLocationInfoWindow;
+  bool polylineDrawn = false;
+  Timer executionTimer;
 
   @override
   void initState() {
@@ -39,18 +47,34 @@ class DistanceOverviewState extends State<DistanceOverview> {
     secondLocation = widget.secondLocation;
     firstLocationInfoWindow = widget.firstLocationInfoWindow;
     secondLocationInfoWindow = widget.secondLocationInfoWindow;
+    onPolylineDrawn = widget.onPolylineDrawn;
+    firstLocationMarkerIcon = widget.firstLocationMarkerIcon;
+    secondLocationMarkerIcon = widget.secondLocationMarkerIcon;
+    executionTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+      if (polylineDrawn == true) {
+        try {
+          onPolylineDrawn();
+          timer.cancel();
+        } catch (err) {}
+      }
+    });
+
     getPolyline = widget.getPolyline;
 
     Marker pickupMarker = new Marker(
         markerId: MarkerId("pickupMarker"),
-        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
+        icon: firstLocationMarkerIcon != null
+            ? firstLocationMarkerIcon
+            : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
         infoWindow:
             firstLocationInfoWindow != null ? firstLocationInfoWindow : null,
         position: LatLng(firstLocation.latitude, firstLocation.longitude));
 
     Marker dropOffMarker = new Marker(
         markerId: MarkerId("drop"),
-        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
+        icon: secondLocationMarkerIcon != null
+            ? secondLocationMarkerIcon
+            : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
         infoWindow:
             secondLocationInfoWindow != null ? secondLocationInfoWindow : null,
         position: LatLng(secondLocation.latitude, secondLocation.longitude));
@@ -81,6 +105,11 @@ class DistanceOverviewState extends State<DistanceOverview> {
         if (!snap.hasData) {
           return Container();
         }
+
+        if (snap.hasData) {
+          polylineDrawn = true;
+        }
+
         return GoogleMap(
           key: new GlobalKey(),
           onMapCreated: (controller) {
