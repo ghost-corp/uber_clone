@@ -124,12 +124,16 @@ class LocationModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> getOverViewPolyLines({bool useCurrentLocation = false}) async {
+  Future<List<Polyline>> getOverViewPolyLines(
+      {bool useCurrentLocation = false}) async {
     var result = await PolylineApi.getPolyLines(
         useCurrentLocation
             ? LatLng(currentLocation.latitude, currentLocation.longitude)
             : LatLng(pickUpLocationInfo.latitude, pickUpLocationInfo.longitude),
         LatLng(dropOffLocationInfo.latitude, dropOffLocationInfo.longitude));
+    if (result == null) {
+      return null;
+    }
     List<LatLng> coordinates = result['polyline'];
     if (coordinates != null) {
       Polyline line = Polyline(
@@ -160,9 +164,9 @@ class LocationModel extends ChangeNotifier {
         print(err);
       }
       notifyListeners();
-      return true;
+      return overviewLines;
     } else {
-      return false;
+      return null;
     }
   }
 
@@ -205,7 +209,7 @@ class LocationModel extends ChangeNotifier {
   }
 }
 
-enum MapMode { NearestDriver, DestinationNavigation }
+enum MapMode { NearestDriver, DestinationNavigation, AwaitingDriver }
 
 class Step {
   String distance;

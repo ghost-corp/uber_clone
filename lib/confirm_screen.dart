@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:uber_clone/api/location_math_api.dart';
 import 'package:uber_clone/api/polyline_api.dart';
 import 'package:uber_clone/global/screen_size.dart';
 import 'package:provider/provider.dart';
 import 'package:uber_clone/models/location_model.dart';
+import 'package:uber_clone/widgets/overview.dart';
 
 class ConfirmPickUpScreen extends StatefulWidget {
   @override
@@ -14,132 +14,52 @@ class ConfirmPickUpScreen extends StatefulWidget {
 
 class _ConfirmPickUpScreenState extends State<ConfirmPickUpScreen> {
   GlobalKey mapKey = new GlobalKey();
-  StreamSubscription polyLineFetchStream;
   GoogleMapController mapController;
   bool fetchSuccess;
   bool confirmedButtonPressed = false;
 
-  @override
-  void dispose() {
-    if (polyLineFetchStream != null) {
-      polyLineFetchStream.cancel();
+  Future<List<Polyline>> getPolyLine(BuildContext context) async {
+    List<Polyline> line;
+    try {
+      var locationModel = Provider.of<LocationModel>(context, listen: false);
+      line = await locationModel.getOverViewPolyLines();
+      if (line == null) {
+        return getPolyLine(context);
+      }
+      if (line.length == 0) {
+        return getPolyLine(context);
+      }
+    } catch (err) {
+      print(err);
     }
-    super.dispose();
+    return line;
   }
 
   @override
   Widget build(BuildContext context) {
+    var locationModel = Provider.of<LocationModel>(context, listen: false);
     return Scaffold(
       body: Column(
         children: <Widget>[
           Expanded(
             child: Stack(
               children: <Widget>[
-                Consumer<LocationModel>(
-                  builder: (context, locationModel, _) {
-                    //markers for both pickup and dropoff locations
-                    List<Marker> markers = new List();
-                    Marker pickupMarker = new Marker(
-                        markerId: MarkerId("pickupMarker"),
-                        icon: BitmapDescriptor.defaultMarkerWithHue(
-                            BitmapDescriptor.hueAzure),
-                        infoWindow: InfoWindow(
-                            title: "Pickup Location",
-                            snippet:
-                                "${locationModel.pickUpLocationInfo.formattedAddress}"),
-                        position: LatLng(
-                            locationModel.pickUpLocationInfo.latitude,
-                            locationModel.pickUpLocationInfo.longitude));
-
-                    Marker dropOffMarker = new Marker(
-                        markerId: MarkerId("drop"),
-                        icon: BitmapDescriptor.defaultMarkerWithHue(
-                            BitmapDescriptor.hueAzure),
-                        infoWindow: InfoWindow(
-                            title: "ETA: $timeOfArrival",
-                            snippet:
-                                "${locationModel.dropOffLocationInfo.formattedAddress.length > 30 ? locationModel.dropOffLocationInfo.formattedAddress.substring(0, 27) + "..." : locationModel.dropOffLocationInfo.formattedAddress}"),
-                        position: LatLng(
-                            locationModel.dropOffLocationInfo.latitude,
-                            locationModel.dropOffLocationInfo.longitude));
-
-                    markers.add(pickupMarker);
-                    markers.add(dropOffMarker);
-
-                    // the focusMapOnBound method focuses the map on the overview polyline
-                    focusMapOnBound(GoogleMapController controller) {
-                      LatLng pickup = LatLng(
-                          locationModel.pickUpLocationInfo.latitude,
-                          locationModel.pickUpLocationInfo.longitude);
-                      LatLng dropOff = LatLng(
-                          locationModel.dropOffLocationInfo.latitude,
-                          locationModel.dropOffLocationInfo.longitude);
-                      LatLngBounds bounds = new LatLngBounds(
-                          southwest: LocationMathApi.calcSouthWestBound(
-                              pickup, dropOff),
-                          northeast: LocationMathApi.calcNorthEastBound(
-                              pickup, dropOff));
-                      CameraUpdate update =
-                          CameraUpdate.newLatLngBounds(bounds, 100);
-                      controller.animateCamera(update);
-                      try {
-                        controller.showMarkerInfoWindow(MarkerId("drop"));
-                      } catch (err) {}
-                    }
-
-                    if (locationModel.overviewLines.length == 0) {
-                      //the polyLineFetchStream continuously tries to get the polyline in case of a network fetch error
-                      polyLineFetchStream = locationModel
-                          .getOverViewPolyLines()
-                          .asStream()
-                          .listen((event) async {
-                        while (locationModel.overviewLines.length == 0) {
-                          fetchSuccess =
-                              await locationModel.getOverViewPolyLines();
-                          Timer(Duration(seconds: 1), () {
-                            if (fetchSuccess) {
-                              focusMapOnBound(mapController);
-                              mapController
-                                  .showMarkerInfoWindow(MarkerId("drop"));
-                            }
-                          });
-                        }
-                        polyLineFetchStream.cancel();
-                      });
-                    }
-
-                    return GoogleMap(
-                      key: mapKey,
-                      onMapCreated: (controller) {
-                        mapController = controller;
-                        //delay is necessary to allow map to be completely built first before animating
-                        Timer(Duration(seconds: 1), () {
-                          focusMapOnBound(controller);
-                          if (locationModel.overviewLines.length > 0) {
-                            controller.showMarkerInfoWindow(MarkerId("drop"));
-                          }
-                        });
-                      },
-                      initialCameraPosition: CameraPosition(
-                          target: LatLng(
-                              locationModel.pickUpLocationInfo.latitude,
-                              locationModel.pickUpLocationInfo.longitude),
-                          zoom: 11.0),
-                      compassEnabled: false,
-                      trafficEnabled: false,
-                      myLocationEnabled: false,
-                      zoomControlsEnabled: false,
-                      rotateGesturesEnabled: false,
-                      mapToolbarEnabled: true,
-                      polylines: locationModel.overviewLines.length > 0
-                          ? locationModel.overviewLines.toSet()
-                          : null,
-                      markers: locationModel.overviewLines.length > 0
-                          ? Set<Marker>.of(markers)
-                          : null,
-                    );
-                  },
-                ),
+                DistanceOverview(
+                    firstLocation: LatLng(
+                        locationModel.pickUpLocationInfo.latitude,
+                        locationModel.pickUpLocationInfo.longitude),
+                    secondLocation: LatLng(
+                        locationModel.dropOffLocationInfo.latitude,
+                        locationModel.dropOffLocationInfo.longitude),
+                    firstLocationInfoWindow: InfoWindow(
+                        title: "Pickup Location",
+                        snippet:
+                            locationModel.pickUpLocationInfo.formattedAddress),
+                    secondLocationInfoWindow: InfoWindow(
+                        title: "ETA: $timeOfArrival",
+                        snippet:
+                            locationModel.dropOffLocationInfo.formattedAddress),
+                    getPolyline: () => getPolyLine(context)),
                 Align(
                   alignment: Alignment.topLeft,
                   child: Padding(

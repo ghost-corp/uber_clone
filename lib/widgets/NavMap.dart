@@ -138,9 +138,9 @@ class NavMapState extends State<NavMap> {
               .asStream()
               .listen((event) async {
             while (locationModel.overviewLines.length == 0) {
-              fetchSuccess = await locationModel.getOverViewPolyLines();
+              List<Polyline> line = await locationModel.getOverViewPolyLines();
               Timer(Duration(seconds: 1), () {
-                if (fetchSuccess) {
+                if (line.length > 0) {
                   focusMapOnBound(mapController);
                 }
               });
