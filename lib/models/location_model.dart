@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:google_map_polyutil/google_map_polyutil.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:uber_clone/api/location_math_api.dart';
 import 'package:uber_clone/api/polyline_api.dart';
 import 'package:uber_clone/api/search_api.dart';
 import 'package:uber_clone/models/driver_model.dart';
-import 'dart:math' as Math;
 import 'package:polyline/polyline.dart' as poly;
 
 class LocationModel extends ChangeNotifier {
@@ -50,14 +50,14 @@ class LocationModel extends ChangeNotifier {
                   LatLng(currentLocation.latitude, currentLocation.longitude),
               polygon: steps[x].coords,
               geodesic: true,
-              tolerance: 6);
+              tolerance: 12);
           notifyListeners();
           onEdge = await GoogleMapPolyUtil.isLocationOnEdge(
               point:
                   LatLng(currentLocation.latitude, currentLocation.longitude),
               polygon: steps[x].coords,
               geodesic: true,
-              tolerance: 6);
+              tolerance: 12);
           if (onPath == true && onEdge == true) {
             nextThreeSteps = new List();
             print("User on track");
@@ -88,6 +88,8 @@ class LocationModel extends ChangeNotifier {
             LatLng(currentLocation.latitude, currentLocation.longitude));
         notifyListeners();
       });
+    } else if (mode == MapMode.AwaitingDriver) {
+      timer.cancel();
     }
     notifyListeners();
   }
@@ -96,11 +98,11 @@ class LocationModel extends ChangeNotifier {
     Driver nearestDriver = nearbyDrivers[0];
     double dist = 0;
     for (int x = 0; x < nearbyDrivers.length; x++) {
-      double distance = getDistanceFromLatLonInKm(
+      double distance = LocationMathApi.getDistanceFromLatLonInKm(
           nearbyDrivers[x].liveLocation.latitude,
           nearbyDrivers[x].liveLocation.longitude,
           pickUpLocationInfo.latitude,
-          pickUpLocationInfo..longitude);
+          pickUpLocationInfo.longitude);
       if (distance < dist) {
         nearestDriver = nearbyDrivers[x];
         dist = distance;
@@ -124,12 +126,16 @@ class LocationModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> getOverViewPolyLines({bool useCurrentLocation = false}) async {
+  Future<List<Polyline>> getOverViewPolyLines(
+      {bool useCurrentLocation = false}) async {
     var result = await PolylineApi.getPolyLines(
         useCurrentLocation
             ? LatLng(currentLocation.latitude, currentLocation.longitude)
             : LatLng(pickUpLocationInfo.latitude, pickUpLocationInfo.longitude),
         LatLng(dropOffLocationInfo.latitude, dropOffLocationInfo.longitude));
+    if (result == null) {
+      return null;
+    }
     List<LatLng> coordinates = result['polyline'];
     if (coordinates != null) {
       Polyline line = Polyline(
@@ -160,9 +166,9 @@ class LocationModel extends ChangeNotifier {
         print(err);
       }
       notifyListeners();
-      return true;
+      return overviewLines;
     } else {
-      return false;
+      return null;
     }
   }
 
@@ -205,59 +211,7 @@ class LocationModel extends ChangeNotifier {
   }
 }
 
-LatLng calcNorthEastBound(LatLng pos1, LatLng pos2) {
-  double lat;
-  double lng;
-  if (pos1.latitude > pos2.latitude) {
-    lat = pos1.latitude;
-  } else {
-    lat = pos2.latitude;
-  }
-
-  if (pos1.longitude > pos2.longitude) {
-    lng = pos1.longitude;
-  } else {
-    lng = pos2.longitude;
-  }
-  return LatLng(lat, lng);
-}
-
-LatLng calcSouthWestBound(LatLng pos1, LatLng pos2) {
-  double lat;
-  double lng;
-  if (pos1.latitude < pos2.latitude) {
-    lat = pos1.latitude;
-  } else {
-    lat = pos2.latitude;
-  }
-
-  if (pos1.longitude < pos2.longitude) {
-    lng = pos1.longitude;
-  } else {
-    lng = pos2.longitude;
-  }
-  return LatLng(lat, lng);
-}
-
-double getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
-  var R = 6371; // Radius of the earth in km
-  var dLat = deg2rad(lat2 - lat1); // deg2rad below
-  var dLon = deg2rad(lon2 - lon1);
-  var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(deg2rad(lat1)) *
-          Math.cos(deg2rad(lat2)) *
-          Math.sin(dLon / 2) *
-          Math.sin(dLon / 2);
-  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  var d = R * c; // Distance in km
-  return d;
-}
-
-double deg2rad(deg) {
-  return deg * (Math.pi / 180);
-}
-
-enum MapMode { NearestDriver, DestinationNavigation }
+enum MapMode { NearestDriver, DestinationNavigation, AwaitingDriver }
 
 class Step {
   String distance;
@@ -294,7 +248,7 @@ class Step {
         endLocation:
             LatLng(json['end_location']['lat'], json['end_location']['lng']),
         polyLine: line,
-        distanceKm: getDistanceFromLatLonInKm(
+        distanceKm: LocationMathApi.getDistanceFromLatLonInKm(
             json['start_location']['lat'],
             json['start_location']['lng'],
             json['end_location']['lat'],

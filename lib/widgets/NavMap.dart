@@ -3,9 +3,11 @@ import 'dart:math' as Math;
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:uber_clone/api/location_math_api.dart';
 import 'package:uber_clone/api/polyline_api.dart';
 import 'package:uber_clone/models/location_model.dart';
 import 'package:uber_clone/models/location_model.dart' as loc;
+import 'package:uber_clone/widgets/NavCenterButton.dart';
 import 'NavInfo.dart';
 
 class NavMap extends StatefulWidget {
@@ -73,11 +75,11 @@ class NavMapState extends State<NavMap> {
             return;
           }
           LatLngBounds bounds = new LatLngBounds(
-              southwest: calcSouthWestBound(
+              southwest: LocationMathApi.calcSouthWestBound(
                   locationModel.nextThreeSteps[0].coords[0],
                   locationModel.nextThreeSteps[0].coords[
                       locationModel.nextThreeSteps[0].coords.length - 1]),
-              northeast: calcNorthEastBound(
+              northeast: LocationMathApi.calcNorthEastBound(
                   locationModel.nextThreeSteps[0].coords[0],
                   locationModel.nextThreeSteps[0].coords[
                       locationModel.nextThreeSteps[0].coords.length - 1]));
@@ -136,9 +138,9 @@ class NavMapState extends State<NavMap> {
               .asStream()
               .listen((event) async {
             while (locationModel.overviewLines.length == 0) {
-              fetchSuccess = await locationModel.getOverViewPolyLines();
+              List<Polyline> line = await locationModel.getOverViewPolyLines();
               Timer(Duration(seconds: 1), () {
-                if (fetchSuccess) {
+                if (line.length > 0) {
                   focusMapOnBound(mapController);
                 }
               });
@@ -149,21 +151,12 @@ class NavMapState extends State<NavMap> {
 
         //closes nav steps
         loc.Step currentStep;
+        loc.Step nextStep;
+        loc.Step futureStep;
+
         try {
           currentStep = locationModel.nextThreeSteps[0];
-        } catch (err) {
-          print(err);
-        }
-
-        loc.Step nextStep;
-        try {
           nextStep = locationModel.nextThreeSteps[1];
-        } catch (err) {
-          print(err);
-        }
-
-        loc.Step futureStep;
-        try {
           futureStep = locationModel.nextThreeSteps[2];
         } catch (err) {
           print(err);
@@ -217,39 +210,12 @@ class NavMapState extends State<NavMap> {
               alignment: Alignment.bottomRight,
               child: Padding(
                 padding: EdgeInsets.all(20),
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      shouldRecenter = true;
-                    });
-                    focusMapOnBound(mapController);
-                  },
-                  child: Card(
-                    elevation: 4,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20)),
-                    child: Padding(
-                      padding: EdgeInsets.all(10),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          Icon(
-                            Icons.navigation,
-                            size: 25,
-                          ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          Text(
-                            "Center",
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
+                child: NavCenterButton(onTap: () {
+                  setState(() {
+                    shouldRecenter = true;
+                  });
+                  focusMapOnBound(mapController);
+                }),
               ),
             ),
           ],
