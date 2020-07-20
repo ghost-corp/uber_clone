@@ -13,6 +13,7 @@ import 'package:uber_clone/welcome_page.dart';
 import 'package:uber_clone/where_to.dart';
 import 'phone_verification.dart';
 import 'package:provider/provider.dart';
+import 'package:uber_clone/models/auth_model.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
