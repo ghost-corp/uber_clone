@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:uber_clone/confirm_screen.dart';
 import 'package:uber_clone/discount.dart';
 import 'package:uber_clone/get_moving.dart';
-import 'file:///C:/Users/Abumuhab/AndroidStudioProjects/uber_clone/lib/home/home.dart';
+import 'package:uber_clone/home/home.dart';
 import 'package:uber_clone/models/location_model.dart';
 import 'package:uber_clone/payment.dart';
 import 'package:uber_clone/phonenumber.dart';
