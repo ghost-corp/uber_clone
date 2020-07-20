@@ -3,12 +3,14 @@ import 'package:flutter/services.dart';
 import 'package:uber_clone/confirm_screen.dart';
 import 'package:uber_clone/discount.dart';
 import 'package:uber_clone/get_moving.dart';
-import 'file:///C:/Users/Abumuhab/AndroidStudioProjects/uber_clone/lib/home/home.dart';
+import 'package:uber_clone/home/home.dart';
+import 'package:uber_clone/models/auth_model.dart';
 import 'package:uber_clone/models/location_model.dart';
 import 'package:uber_clone/payment.dart';
 import 'package:uber_clone/phonenumber.dart';
 import 'package:uber_clone/pickup_location.dart';
 import 'package:uber_clone/settings.dart';
+import 'package:uber_clone/welcome_page.dart';
 import 'package:uber_clone/where_to.dart';
 import 'phone_verification.dart';
 import 'package:provider/provider.dart';
@@ -22,6 +24,9 @@ void main() {
       ChangeNotifierProvider(
         create: (context) => LocationModel(),
       ),
+      ChangeNotifierProvider(
+        create: (context) => AuthModel(),
+      )
     ],
     child: MyApp(),
   ));
@@ -35,9 +40,6 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Uber Clone',
       theme: ThemeData(primaryColor: Colors.black, accentColor: Colors.black),
-//      home: WelcomePage(title: 'Uber'),
-//      home: HomePage(),
-      initialRoute: "home_page",
       routes: {
         "phone_sign_up": (context) => PhoneNumber(),
         "phone_verification_page": (context) => VerificationPage(),
@@ -48,8 +50,17 @@ class MyApp extends StatelessWidget {
         "where_to": (context) => WhereToScreen(),
         "pickup_location": (context) => PickUpLocation(),
         "home_page": (context) => HomePage(),
-        "confirm_screen": (context) => ConfirmPickUpScreen()
+        "confirm_screen": (context) => ConfirmPickUpScreen(),
+        "welcome_page": (context) => Consumer<AuthModel>(
+              builder: (context, authModel, _) {
+                if (authModel.user == null) {
+                  return WelcomePage(title: "Uber Clone");
+                }
+                return HomePage();
+              },
+            ),
       },
+      initialRoute: "welcome_page",
     );
   }
 }
