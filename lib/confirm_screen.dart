@@ -258,7 +258,7 @@ class ConfirmScreenBottomNavState extends State<ConfirmScreenBottomNav> {
                                 });
                                 Timer(Duration(seconds: 3), () {
                                   Navigator.popUntil(context,
-                                      ModalRoute.withName('home_page'));
+                                      ModalRoute.withName('welcome_page'));
                                   Provider.of<LocationModel>(context,
                                           listen: false)
                                       .setMapMode(MapMode.AwaitingDriver);

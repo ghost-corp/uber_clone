@@ -49,7 +49,6 @@ class MyApp extends StatelessWidget {
         "payment": (context) => Payment(),
         "where_to": (context) => WhereToScreen(),
         "pickup_location": (context) => PickUpLocation(),
-        "home_page": (context) => HomePage(),
         "confirm_screen": (context) => ConfirmPickUpScreen(),
         "welcome_page": (context) => Consumer<AuthModel>(
               builder: (context, authModel, _) {

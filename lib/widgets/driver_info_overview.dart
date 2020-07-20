@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:uber_clone/global/screen_size.dart';
+import 'package:provider/provider.dart';
+import 'package:uber_clone/models/location_model.dart';
 
 class DriverInfo extends StatelessWidget {
   @override
@@ -30,7 +32,8 @@ class DriverInfo extends StatelessWidget {
                           CircleBorder(side: BorderSide(color: Colors.black)),
                       child: Icon(Icons.clear),
                       onPressed: () {
-                        //TODO
+                        Provider.of<LocationModel>(context, listen: false)
+                            .setMapMode(MapMode.NearestDriver);
                       },
                     ),
                     Padding(
