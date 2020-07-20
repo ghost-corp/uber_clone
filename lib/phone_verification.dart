@@ -12,6 +12,7 @@ class VerificationPage extends StatefulWidget {
 class VerificationPageState extends State<VerificationPage> {
   TextEditingController pinCodeController = TextEditingController();
   bool hasError = false;
+  bool codeComplete = false;
   @override
   Widget build(BuildContext context) {
     String phoneNumber = ModalRoute.of(context).settings.arguments;
@@ -82,6 +83,9 @@ class VerificationPageState extends State<VerificationPage> {
                                   onTextChanged: (text) {
                                     setState(() {
                                       hasError = false;
+                                      if (text.length == 6) {
+                                        codeComplete = true;
+                                      }
                                     });
                                   },
                                   onDone: (text) {
@@ -119,6 +123,7 @@ class VerificationPageState extends State<VerificationPage> {
                               children: <Widget>[
                                 GestureDetector(
                                   onTap: () {
+//                                    Provider.of<AuthModel>(context,listen: false).setAuthProgress(AuthProgress.neutral);
                                     Navigator.pop(context);
                                   },
                                   child: Text(
@@ -134,9 +139,12 @@ class VerificationPageState extends State<VerificationPage> {
                             padding: EdgeInsets.all(10),
                             child: FloatingActionButton(
                               onPressed: () {
-                                Provider.of<AuthModel>(context, listen: false)
-                                    .signInVerificationCode(
-                                        pinCodeController.text.trim(), context);
+                                if (codeComplete) {
+                                  Provider.of<AuthModel>(context, listen: false)
+                                      .signInVerificationCode(
+                                          pinCodeController.text.trim(),
+                                          context);
+                                }
                               },
                               child: Icon(
                                 Icons.arrow_forward,

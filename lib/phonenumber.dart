@@ -11,6 +11,7 @@ class PhoneNumber extends StatefulWidget {
 TextEditingController phoneController =
     TextEditingController(text: "8027278021");
 TextEditingController nameController = TextEditingController();
+GlobalKey<FormState> formKey = GlobalKey();
 
 class _PhoneNumberState extends State<PhoneNumber> {
   @override
@@ -103,20 +104,34 @@ class _PhoneNumberState extends State<PhoneNumber> {
                                                     .size
                                                     .width *
                                                 0.6,
-                                            child: TextFormField(
-                                              autofocus: true,
-                                              keyboardType: TextInputType.phone,
-                                              decoration: InputDecoration(
-                                                hintStyle: TextStyle(
-                                                    color: Colors.grey,
-                                                    fontSize:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .width *
-                                                            0.046),
-                                                hintText: '09012345678',
+                                            child: Form(
+                                              key: formKey,
+                                              child: TextFormField(
+                                                autofocus: true,
+                                                validator: (value) {
+                                                  if (value.length > 10) {
+                                                    return "Phone number exceeds 10 digits";
+                                                  }
+
+                                                  if (value.length < 10) {
+                                                    return "Invalid phone number";
+                                                  }
+                                                  return null;
+                                                },
+                                                keyboardType:
+                                                    TextInputType.phone,
+                                                decoration: InputDecoration(
+                                                  hintStyle: TextStyle(
+                                                      color: Colors.grey,
+                                                      fontSize:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width *
+                                                              0.046),
+                                                  hintText: '09012345678',
+                                                ),
+                                                controller: phoneController,
                                               ),
-                                              controller: phoneController,
                                             ),
                                           )),
                                     ),
@@ -159,10 +174,13 @@ class _PhoneNumberState extends State<PhoneNumber> {
                               padding: EdgeInsets.all(10),
                               child: FloatingActionButton(
                                 onPressed: () async {
-                                  Provider.of<AuthModel>(context, listen: false)
-                                      .signUpWithPhoneNumber(
-                                          "+234" + phoneController.text,
-                                          context);
+                                  if (formKey.currentState.validate()) {
+                                    Provider.of<AuthModel>(context,
+                                            listen: false)
+                                        .signUpWithPhoneNumber(
+                                            "+234" + phoneController.text,
+                                            context);
+                                  }
                                 },
                                 child: Icon(
                                   Icons.arrow_forward,

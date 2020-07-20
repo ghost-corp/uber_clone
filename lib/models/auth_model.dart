@@ -20,36 +20,59 @@ class AuthModel extends ChangeNotifier {
     authStateStream.cancel();
   }
 
+  void setAuthProgress(AuthProgress progress) {
+    authProgress = progress;
+    notifyListeners();
+  }
+
   Future<void> signUpWithPhoneNumber(
       String phoneNumber, BuildContext context) async {
     authProgress = AuthProgress.sendingVerificationCode;
     notifyListeners();
-    await FirebaseAuth.instance.verifyPhoneNumber(
-        phoneNumber: phoneNumber,
-        timeout: Duration(minutes: 2),
-        verificationCompleted: (authCredentials) {},
-        verificationFailed: (authException) {
-          authProgress = AuthProgress.errorSendingVerificationCode;
-          notifyListeners();
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[Text("Error sending verification code")],
-                  ),
-                );
-              });
-        },
-        codeSent: (String verificationId, [int forceResendingToken]) {
-          this.verificationId = verificationId;
-          authProgress = AuthProgress.verificationCodeSent;
-          Navigator.pushNamed(context, "phone_verification_page");
-        },
-        codeAutoRetrievalTimeout: (value) {
-          print(value);
-        });
+    await FirebaseAuth.instance
+        .verifyPhoneNumber(
+            phoneNumber: phoneNumber,
+            timeout: Duration(minutes: 2),
+            verificationCompleted: (authCredentials) {},
+            verificationFailed: (authException) {
+              print(authException.message);
+              authProgress = AuthProgress.errorSendingVerificationCode;
+              notifyListeners();
+              showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Text("Error sending verification code")
+                        ],
+                      ),
+                    );
+                  });
+            },
+            codeSent: (String verificationId, [int forceResendingToken]) {
+              this.verificationId = verificationId;
+              authProgress = AuthProgress.verificationCodeSent;
+              Navigator.pushNamed(context, "phone_verification_page");
+            },
+            codeAutoRetrievalTimeout: (value) {
+              print("timeout");
+            })
+        .catchError((err) {
+      authProgress = AuthProgress.errorSendingVerificationCode;
+      notifyListeners();
+      showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[Text("Error sending verification code")],
+              ),
+            );
+          });
+    });
   }
 
   void signInVerificationCode(String code, BuildContext context) async {
