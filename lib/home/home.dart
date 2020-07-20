@@ -11,8 +11,6 @@ import 'package:uber_clone/widgets/NavMap.dart';
 import 'package:uber_clone/widgets/driver_info_overview.dart';
 import 'package:uber_clone/widgets/overview.dart';
 
-GlobalKey<ScaffoldState> key = new GlobalKey();
-
 class HomePage extends StatefulWidget {
   @override
   State createState() => HomePageState();
@@ -21,6 +19,7 @@ class HomePage extends StatefulWidget {
 class HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
+    GlobalKey<ScaffoldState> key = new GlobalKey();
     return Scaffold(
       key: key,
       drawer: Container(
@@ -28,21 +27,30 @@ class HomePageState extends State<HomePage> {
         width: MediaQuery.of(context).size.width * 0.8,
         child: SideDrawerOption(),
       ),
-      body: HomeBody(),
+      body: HomeBody(scaffoldKey: key),
     );
   }
 }
 
 class HomeBody extends StatefulWidget {
+  final GlobalKey<ScaffoldState> scaffoldKey;
+  HomeBody({this.scaffoldKey});
   @override
   State createState() => HomeBodyState();
 }
 
 class HomeBodyState extends State<HomeBody> {
+  GlobalKey<ScaffoldState> scaffoldKey;
   GoogleMapController mapController;
   GlobalKey mapKey = new GlobalKey();
   BitmapDescriptor driverIcon;
   int buildCount = 0;
+
+  @override
+  void initState() {
+    scaffoldKey = widget.scaffoldKey;
+    super.initState();
+  }
 
   void initializeMarkerIcons() {
     if (driverIcon == null) {
@@ -114,7 +122,7 @@ class HomeBodyState extends State<HomeBody> {
                   if (locationModel.mapMode == MapMode.DestinationNavigation) {
                     return NavMap(
                       onMenuTap: () {
-                        key.currentState.openDrawer();
+                        scaffoldKey.currentState.openDrawer();
                       },
                     );
                   }

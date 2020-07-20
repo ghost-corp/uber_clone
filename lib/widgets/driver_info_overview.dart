@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:uber_clone/global/screen_size.dart';
+import 'package:provider/provider.dart';
+import 'package:uber_clone/models/location_model.dart';
 
 class DriverInfo extends StatelessWidget {
   @override
@@ -26,14 +28,12 @@ class DriverInfo extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
                     FlatButton(
-                      shape: CircleBorder(
-                        side: BorderSide(color: Colors.black)
-                      ),
-                      child: Icon(
-                        Icons.clear
-                      ),
+                      shape:
+                          CircleBorder(side: BorderSide(color: Colors.black)),
+                      child: Icon(Icons.clear),
                       onPressed: () {
-                        //TODO
+                        Provider.of<LocationModel>(context, listen: false)
+                            .setMapMode(MapMode.NearestDriver);
                       },
                     ),
                     Padding(
@@ -41,9 +41,7 @@ class DriverInfo extends StatelessWidget {
                       child: Text(
                         'Cancel Ride',
                         style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 14
-                        ),
+                            fontWeight: FontWeight.w500, fontSize: 14),
                       ),
                     )
                   ],
@@ -52,10 +50,12 @@ class DriverInfo extends StatelessWidget {
               Expanded(
                 flex: 1,
                 child: Container(
-                  child: Image.asset('images/cars.png', fit: BoxFit.fill,),
+                  child: Image.asset(
+                    'images/cars.png',
+                    fit: BoxFit.fill,
+                  ),
                 ),
               ),
-
               Padding(
                 padding: EdgeInsets.only(right: 10),
                 child: Column(
@@ -64,19 +64,15 @@ class DriverInfo extends StatelessWidget {
                   children: <Widget>[
                     Text(
                       'Toyota Corolla',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontSize: 20
-                      ),
+                      style:
+                          TextStyle(fontWeight: FontWeight.w400, fontSize: 20),
                     ),
                     Padding(
                       padding: EdgeInsets.only(top: 5),
                       child: Text(
                         'BC123-BRC',
                         style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 20
-                        ),
+                            fontWeight: FontWeight.w600, fontSize: 20),
                       ),
                     )
                   ],
@@ -92,21 +88,19 @@ class DriverInfo extends StatelessWidget {
               Text(
                 'Tuksa',
                 style: TextStyle(
-                  color: Colors.indigo,
-                  fontWeight: FontWeight.w500,
-                  fontSize: 16
-                ),
+                    color: Colors.indigo,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 16),
               ),
-              
-              Text('  .  ', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18),),
+              Text(
+                '  .  ',
+                style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18),
+              ),
               Row(
                 children: <Widget>[
                   Text(
                     '5.0 ',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600
-                    ),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                   Icon(
                     Icons.star,
@@ -115,14 +109,16 @@ class DriverInfo extends StatelessWidget {
                   )
                 ],
               ),
-              Text('  .  ', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18),),
+              Text(
+                '  .  ',
+                style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18),
+              ),
               Text(
                 'Knows English & French',
                 style: TextStyle(
-                  color: Colors.black54,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600
-                ),
+                    color: Colors.black54,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600),
               )
             ],
           ),
@@ -132,28 +128,21 @@ class DriverInfo extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
               IconButton(
-                icon: Icon(
-                  Icons.call
-                ),
+                icon: Icon(Icons.call),
                 onPressed: () {
                   //TODO
                 },
               ),
-
               Container(
                 width: width(context) * 0.6,
                 height: 40,
                 child: TextField(
                   decoration: InputDecoration(
-                    contentPadding: EdgeInsets.all(12),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(24))
-                    ),
-                    hintText: 'Any pickup notes?',
-                    hintStyle: TextStyle(
-                      color: Colors.grey
-                    )
-                  ),
+                      contentPadding: EdgeInsets.all(12),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(24))),
+                      hintText: 'Any pickup notes?',
+                      hintStyle: TextStyle(color: Colors.grey)),
                 ),
               ),
               IconButton(
