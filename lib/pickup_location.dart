@@ -1,10 +1,10 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:uber_clone/api/search_api.dart';
 import 'package:uber_clone/global/screen_size.dart';
 import 'package:uber_clone/models/location_model.dart';
+import 'package:uber_clone/widgets/map_location_selector.dart';
 
 class PickUpLocation extends StatefulWidget {
   @override
@@ -15,39 +15,24 @@ class _PickUpLocationState extends State<PickUpLocation> {
   GoogleMapController mapController;
   Place pickUpSpot;
   LatLng markerLocation;
-  StreamSubscription searchStream;
   int buildCount = 0;
   bool fetchingInfo = false;
-  GlobalKey mapKey = new GlobalKey();
 
-  void getSearchResult(LatLng location) {
+  //locationSelectorKey us used to access the selected location of the MapLocationSelectorWidget
+  GlobalKey<MapLocationSelectorState> locationSelectorKey = new GlobalKey();
+
+  void getSearchResult() {
     setState(() {
       fetchingInfo = true;
     });
-    if (searchStream != null) {
-      try {
-        searchStream.cancel();
-      } catch (err) {}
-    }
-    searchStream = SearchApi.convertCoordinatesToAddress(location)
-        .asStream()
-        .listen((result) {
+    SearchApi.convertCoordinatesToAddress(
+            locationSelectorKey.currentState.markerLocation)
+        .then((result) {
       setState(() {
         pickUpSpot = result;
         fetchingInfo = false;
       });
-      if (searchStream != null) {
-        searchStream.cancel();
-      }
     });
-  }
-
-  @override
-  void dispose() {
-    if (searchStream != null) {
-      searchStream.cancel();
-    }
-    super.dispose();
   }
 
   @override
@@ -79,34 +64,12 @@ class _PickUpLocationState extends State<PickUpLocation> {
           Expanded(
             child: Stack(
               children: <Widget>[
-                GoogleMap(
-                  key: mapKey,
-                  onMapCreated: (GoogleMapController controller) {
-                    mapController = controller;
+                MapLocationSelector(
+                  initialLocation: markerLocation,
+                  key: locationSelectorKey,
+                  onCameraMove: () {
+                    getSearchResult();
                   },
-                  initialCameraPosition: CameraPosition(
-                      target: LatLng(
-                          markerLocation.latitude, markerLocation.longitude),
-                      zoom: 16.0),
-                  trafficEnabled: false,
-                  onCameraMove: (center) {
-                    setState(() {
-                      markerLocation = LatLng(center.toMap()['target'][0],
-                          center.toMap()['target'][1]);
-                    });
-                  },
-                  onCameraIdle: () {
-                    getSearchResult(markerLocation);
-                  },
-                  myLocationButtonEnabled: true,
-                  zoomControlsEnabled: false,
-                  markers: Set<Marker>.of(<Marker>[
-                    Marker(
-                        markerId: MarkerId("1"),
-                        icon: BitmapDescriptor.defaultMarkerWithHue(
-                            BitmapDescriptor.hueAzure),
-                        position: markerLocation)
-                  ]),
                 ),
                 Align(
                   alignment: Alignment.topLeft,
