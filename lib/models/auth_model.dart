@@ -69,6 +69,7 @@ class AuthModel extends ChangeNotifier {
             codeSent: (String verificationId, [int forceResendingToken]) {
               this.verificationId = verificationId;
               authProgress = AuthProgress.verificationCodeSent;
+              notifyListeners();
               Navigator.pushNamed(context, "phone_verification_page");
             },
             codeAutoRetrievalTimeout: (value) {
