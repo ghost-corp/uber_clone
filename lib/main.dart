@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:uber_clone/confirm_screen.dart';
 import 'package:uber_clone/discount.dart';
+import 'package:uber_clone/edit_account.dart';
 import 'package:uber_clone/get_moving.dart';
 import 'package:uber_clone/home/home.dart';
 import 'package:uber_clone/models/location_model.dart';
@@ -58,6 +59,7 @@ class MyApp extends StatelessWidget {
                 return HomePage();
               },
             ),
+        "edit_account": (context) => EditAccount()
       },
       initialRoute: "welcome_page",
     );
