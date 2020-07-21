@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:uber_clone/models/auth_model.dart';
 
 class SideDrawerOption extends StatelessWidget {
   @override
@@ -21,24 +23,77 @@ class SideDrawerOption extends StatelessWidget {
                       left: MediaQuery.of(context).size.width * 0.01,
                       bottom: MediaQuery.of(context).size.width * 0.01,
                       right: MediaQuery.of(context).size.width * 0.01),
-                  child: Row(
-                    children: <Widget>[
-                      Icon(
-                        Icons.account_circle,
-                        color: Colors.white,
-                        size: MediaQuery.of(context).size.width * 0.2,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.all(3),
-                        child: Text(
-                          "Abdulmalik Abubakar",
-                          style: TextStyle(
+                  child: Consumer<AuthModel>(
+                    builder: (context, authModel, _) {
+                      if (authModel.userDetails == null) {
+                        return Row(
+                          children: <Widget>[
+                            Icon(
+                              Icons.account_circle,
                               color: Colors.white,
-                              fontSize:
-                                  MediaQuery.of(context).size.width * 0.05),
-                        ),
-                      )
-                    ],
+                              size: MediaQuery.of(context).size.width * 0.2,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(3),
+                              child: Text(
+                                "Loading Info...",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize:
+                                        MediaQuery.of(context).size.width *
+                                            0.05),
+                              ),
+                            )
+                          ],
+                        );
+                      }
+                      if (authModel.userDetails.firstName == null ||
+                          authModel.userDetails.firstName == "") {
+                        return GestureDetector(
+                          onTap: () {},
+                          child: Row(
+                            children: <Widget>[
+                              Icon(
+                                Icons.account_circle,
+                                color: Colors.white,
+                                size: MediaQuery.of(context).size.width * 0.2,
+                              ),
+                              Padding(
+                                padding: EdgeInsets.all(3),
+                                child: Text(
+                                  "Tap to setup profile",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize:
+                                          MediaQuery.of(context).size.width *
+                                              0.05),
+                                ),
+                              )
+                            ],
+                          ),
+                        );
+                      }
+
+                      return Row(
+                        children: <Widget>[
+                          Icon(
+                            Icons.account_circle,
+                            color: Colors.white,
+                            size: MediaQuery.of(context).size.width * 0.2,
+                          ),
+                          Padding(
+                            padding: EdgeInsets.all(3),
+                            child: Text(
+                              "${authModel.userDetails.firstName} ${authModel.userDetails.lastName}",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize:
+                                      MediaQuery.of(context).size.width * 0.05),
+                            ),
+                          )
+                        ],
+                      );
+                    },
                   ),
                 ),
               ),

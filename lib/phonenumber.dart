@@ -8,8 +8,7 @@ class PhoneNumber extends StatefulWidget {
   _PhoneNumberState createState() => _PhoneNumberState();
 }
 
-TextEditingController phoneController =
-    TextEditingController(text: "8027278021");
+TextEditingController phoneController = TextEditingController();
 TextEditingController nameController = TextEditingController();
 GlobalKey<FormState> formKey = GlobalKey();
 
@@ -128,7 +127,7 @@ class _PhoneNumberState extends State<PhoneNumber> {
                                                                   .size
                                                                   .width *
                                                               0.046),
-                                                  hintText: '09012345678',
+                                                  hintText: '9012345678',
                                                 ),
                                                 controller: phoneController,
                                               ),
@@ -177,7 +176,7 @@ class _PhoneNumberState extends State<PhoneNumber> {
                                   if (formKey.currentState.validate()) {
                                     Provider.of<AuthModel>(context,
                                             listen: false)
-                                        .signUpWithPhoneNumber(
+                                        .authenticateWithPhoneNumber(
                                             "+234" + phoneController.text,
                                             context);
                                   }
@@ -209,10 +208,6 @@ class _PhoneNumberState extends State<PhoneNumber> {
               )
             ],
           )),
-//      floatingActionButton: FloatingActionButton(
-//        child: Icon(Icons.arrow_forward),
-//        onPressed: null,
-//      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
     );
   }
