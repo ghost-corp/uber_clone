@@ -23,26 +23,31 @@ class _SettingsState extends State<Settings> {
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: <Widget>[
-                Container(
-                  height: MediaQuery.of(context).size.height * 0.1,
-                  width: MediaQuery.of(context).size.height * 0.1,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.all(Radius.circular(60)),
-                    child: Image.asset("images/index.png"),
+            child: InkWell(
+              onTap: () {
+                Navigator.of(context).pushNamed('edit_account');
+              },
+              child: Row(
+                children: <Widget>[
+                  Container(
+                    height: MediaQuery.of(context).size.height * 0.1,
+                    width: MediaQuery.of(context).size.height * 0.1,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.all(Radius.circular(60)),
+                      child: Image.asset("images/index.png"),
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 12),
-                  child: Column(
-                    children: <Widget>[
-                      Text('Emmanuel Tuksa'),
-                      Text('+2449026794379')
-                    ],
-                  ),
-                )
-              ],
+                  Padding(
+                    padding: const EdgeInsets.only(left: 12),
+                    child: Column(
+                      children: <Widget>[
+                        Text('Emmanuel Tuksa'),
+                        Text('+2449026794379')
+                      ],
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
           Divider(
