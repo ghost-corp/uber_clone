@@ -1,11 +1,13 @@
 import 'dart:async';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthModel extends ChangeNotifier {
   FirebaseUser user;
+  UserDetails userDetails;
   StreamSubscription authStateStream;
+  StreamSubscription userDetailsSub;
   String verificationId;
   AuthProgress authProgress = AuthProgress.neutral;
 
@@ -13,11 +15,22 @@ class AuthModel extends ChangeNotifier {
     authStateStream = FirebaseAuth.instance.onAuthStateChanged.listen((user) {
       this.user = user;
       notifyListeners();
+      try {
+        if (user != null) {
+          userDetailsSub = _getUserDetails().asStream().listen((val) {
+            userDetails = val;
+            notifyListeners();
+          });
+        }
+      } catch (err) {
+        print(err);
+      }
     });
   }
 
   void cancelAuthStream() {
     authStateStream.cancel();
+    userDetailsSub.cancel();
   }
 
   void setAuthProgress(AuthProgress progress) {
@@ -25,7 +38,7 @@ class AuthModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> signUpWithPhoneNumber(
+  Future<void> authenticateWithPhoneNumber(
       String phoneNumber, BuildContext context) async {
     authProgress = AuthProgress.sendingVerificationCode;
     notifyListeners();
@@ -33,7 +46,9 @@ class AuthModel extends ChangeNotifier {
         .verifyPhoneNumber(
             phoneNumber: phoneNumber,
             timeout: Duration(minutes: 2),
-            verificationCompleted: (authCredentials) {},
+            verificationCompleted: (credential) {
+              _signInWithCredentials(credential, context);
+            },
             verificationFailed: (authException) {
               print(authException.message);
               authProgress = AuthProgress.errorSendingVerificationCode;
@@ -96,6 +111,10 @@ class AuthModel extends ChangeNotifier {
             );
           });
     }
+    _signInWithCredentials(credential, context);
+  }
+
+  void _signInWithCredentials(AuthCredential credential, BuildContext context) {
     var futureResult = FirebaseAuth.instance.signInWithCredential(credential);
     futureResult.catchError((err) {
       authProgress = AuthProgress.invalidVerificationCode;
@@ -114,6 +133,43 @@ class AuthModel extends ChangeNotifier {
     futureResult.then((authResult) {
       Navigator.popUntil(context, ModalRoute.withName('welcome_page'));
     });
+  }
+
+  Future<UserDetails> _getUserDetails() async {
+    UserDetails detailsTemp;
+    while (detailsTemp == null) {
+      try {
+        var snapshot = await Firestore.instance
+            .collection("users")
+            .document(user.uid)
+            .get()
+            .catchError((err) {
+          print(err);
+        });
+        if (snapshot.data == null) {
+          detailsTemp = UserDetails();
+        }
+        detailsTemp = UserDetails.fromJson(snapshot.data);
+      } catch (err) {
+        print(err);
+      }
+    }
+    return detailsTemp;
+  }
+}
+
+class UserDetails {
+  String firstName;
+  String lastName;
+  String phoneNumber;
+
+  UserDetails({this.phoneNumber = "", this.lastName = "", this.firstName = ""});
+
+  factory UserDetails.fromJson(Map<String, dynamic> json) {
+    return UserDetails(
+        firstName: json['firstName'],
+        lastName: json['lastName'],
+        phoneNumber: json['phoneNumber']);
   }
 }
 
