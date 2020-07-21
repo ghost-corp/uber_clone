@@ -50,7 +50,9 @@ class SideDrawerOption extends StatelessWidget {
                       if (authModel.userDetails.firstName == null ||
                           authModel.userDetails.firstName == "") {
                         return GestureDetector(
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.of(context).pushNamed('edit_account');
+                          },
                           child: Row(
                             children: <Widget>[
                               Icon(

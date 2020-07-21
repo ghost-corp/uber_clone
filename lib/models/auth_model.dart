@@ -28,6 +28,43 @@ class AuthModel extends ChangeNotifier {
     });
   }
 
+  Future<bool> updateFirstName(String firstName) async {
+    try {
+      await Firestore.instance.collection("users").document(user.uid).setData(
+          {"firstName": firstName, "phoneNumber": user.phoneNumber},
+          merge: true).catchError((err) {
+        print(err);
+        return false;
+      });
+      userDetailsSub = _getUserDetails().asStream().listen((val) {
+        userDetails = val;
+        notifyListeners();
+      });
+    } catch (err) {
+      print(err);
+      return false;
+    }
+    return true;
+  }
+
+  Future<bool> updateLastName(String lastName) async {
+    try {
+      await Firestore.instance.collection("users").document(user.uid).setData(
+          {"lastName": lastName, "phoneNumber": user.phoneNumber},
+          merge: true).catchError((err) {
+        return false;
+      });
+      userDetailsSub = _getUserDetails().asStream().listen((val) {
+        userDetails = val;
+        notifyListeners();
+      });
+    } catch (err) {
+      print(err);
+      return false;
+    }
+    return true;
+  }
+
   void cancelAuthStream() {
     authStateStream.cancel();
     userDetailsSub.cancel();
