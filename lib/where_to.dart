@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
@@ -15,34 +14,16 @@ class _WhereToScreenState extends State<WhereToScreen> {
   bool doneButton = false;
   List<Place> searchResult = new List();
   bool fetchingResult = false;
-  StreamSubscription searchStream;
   TextEditingController controller = new TextEditingController();
   TextEditingController destinationController = new TextEditingController();
   GlobalKey mapKey = new GlobalKey();
 
   void getSearchResult(BuildContext context, String searchKey) {
-    if (searchStream != null) {
-      try {
-        searchStream.cancel();
-      } catch (err) {}
-    }
-    searchStream =
-        SearchApi.searchPlace(context, searchKey).asStream().listen((result) {
+    SearchApi.searchPlace(context, searchKey).then((result) {
       setState(() {
         searchResult = result;
       });
-      if (searchStream != null) {
-        searchStream.cancel();
-      }
     });
-  }
-
-  @override
-  void dispose() {
-    if (searchStream != null) {
-      searchStream.cancel();
-    }
-    super.dispose();
   }
 
   @override
