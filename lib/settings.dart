@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:uber_clone/models/auth_model.dart';
 
 class Settings extends StatefulWidget {
   @override
@@ -39,11 +41,20 @@ class _SettingsState extends State<Settings> {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(left: 12),
-                    child: Column(
-                      children: <Widget>[
-                        Text('Emmanuel Tuksa'),
-                        Text('+2449026794379')
-                      ],
+                    child: Consumer<AuthModel>(
+                      builder: (context, authModel, _) {
+                        if (authModel.userDetails == null) {
+                          return Text(authModel.user.phoneNumber);
+                        }
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                                '${authModel.userDetails.firstName} ${authModel.userDetails.lastName}'),
+                            Text(authModel.user.phoneNumber)
+                          ],
+                        );
+                      },
                     ),
                   )
                 ],

@@ -173,7 +173,8 @@ class _PhoneNumberState extends State<PhoneNumber> {
                               padding: EdgeInsets.all(10),
                               child: FloatingActionButton(
                                 onPressed: () async {
-                                  FocusScope.of(context).requestFocus(new FocusNode());
+                                  FocusScope.of(context)
+                                      .requestFocus(new FocusNode());
                                   if (formKey.currentState.validate()) {
                                     Provider.of<AuthModel>(context,
                                             listen: false)
