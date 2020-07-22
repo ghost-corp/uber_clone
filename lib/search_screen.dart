@@ -3,6 +3,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:uber_clone/api/search_api.dart';
 import 'package:uber_clone/global/screen_size.dart';
+import 'package:uber_clone/models/auth_model.dart';
 import 'package:uber_clone/models/location_model.dart';
 import 'package:uber_clone/widgets/map_location_selector.dart';
 
@@ -123,7 +124,10 @@ class _SearchScreenState extends State<SearchScreen> {
                 ),
                 color: Colors.black,
                 onPressed: () {
-
+                  Provider.of<AuthModel>(context, listen: false).saveAddress(address);
+                  Navigator.of(context).popUntil(
+                    ModalRoute.withName("choose_saved")
+                  );
                 },
               ),
             ),

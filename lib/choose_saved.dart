@@ -1,4 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:uber_clone/api/search_api.dart';
+import 'package:uber_clone/models/auth_model.dart';
 
 class ChooseSavedDestination extends StatefulWidget {
   @override
@@ -8,6 +12,9 @@ class ChooseSavedDestination extends StatefulWidget {
 class _ChooseSavedDestinationState extends State<ChooseSavedDestination> {
   @override
   Widget build(BuildContext context) {
+
+    String userId = Provider.of<AuthModel>(context, listen: false).user.uid;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -29,27 +36,80 @@ class _ChooseSavedDestinationState extends State<ChooseSavedDestination> {
           },
         ),
       ),
-      body: ListView(
-        children: <Widget>[
-          ListTile(
-            title: Text(
-              'Add saved place',
-              style: TextStyle(
-                color: Colors.indigo
+      body: StreamBuilder<QuerySnapshot>(
+        stream: Firestore.instance.collection('users').document(userId)
+        .collection('saved places').snapshots(),
+        builder: (BuildContext context, snapshot) {
+
+          if(!snapshot.hasData || snapshot.hasError || snapshot.data.documents.isEmpty)
+            return ListView(
+              children: <Widget>[
+                ListTile(
+                  title: Text(
+                    'Add saved place',
+                    style: TextStyle(
+                        color: Colors.indigo
+                    ),
+                  ),
+                  subtitle: Text(
+                    'Get to your favourite destination faster',
+                    style: TextStyle(
+                        color: Colors.grey
+                    ),
+                  ),
+                  onTap: () {
+                    Navigator.of(context).pushNamed("search_destination");
+                  },
+                ),
+                Divider()
+              ],
+            );
+
+          List<Place> places = [];
+          List<Widget> placeWidget;
+
+          snapshot.data.documents.forEach((element) {
+            places.add(Place.fromJson(element.data));
+          });
+
+          placeWidget = places.map((e) => Column(
+            children: <Widget>[
+              ListTile(
+                title: Text(
+                  e.formattedAddress
+                ),
+                subtitle: Text(
+                  e.name
+                ),
               ),
-            ),
-            subtitle: Text(
-              'Get to your favourite destination faster',
-              style: TextStyle(
-                color: Colors.grey
+              Divider()
+            ],
+          )).toList();
+
+          return ListView(
+            children: <Widget>[
+              ...placeWidget,
+              ListTile(
+                title: Text(
+                  'Add saved place',
+                  style: TextStyle(
+                      color: Colors.indigo
+                  ),
+                ),
+                subtitle: Text(
+                  'Get to your favourite destination faster',
+                  style: TextStyle(
+                      color: Colors.grey
+                  ),
+                ),
+                onTap: () {
+                  Navigator.of(context).pushNamed("search_destination");
+                },
               ),
-            ),
-            onTap: () {
-              Navigator.of(context).pushNamed("search_destination");
-            },
-          ),
-          Divider()
-        ],
+              Divider()
+            ],
+          );
+        },
       ),
     );
   }

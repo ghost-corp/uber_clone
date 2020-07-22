@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:uber_clone/api/search_api.dart';
 
 class AuthModel extends ChangeNotifier {
   FirebaseUser user;
@@ -26,6 +27,22 @@ class AuthModel extends ChangeNotifier {
         print(err);
       }
     });
+  }
+
+  Future<bool> saveAddress(Place place) async {
+    try {
+      await Firestore.instance.collection("users").document(user.uid)
+          .collection("saved places").add({
+        "longitude": place.longitude,
+        "latitude": place.latitude,
+        "name": place.name,
+        "formatted_address": place.formattedAddress,
+        "place_id": place.placeId
+      });
+    } catch(e) {
+      return false;
+    }
+    return true;
   }
 
   Future<bool> updateFirstName(String firstName) async {
