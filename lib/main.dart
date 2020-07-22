@@ -14,7 +14,7 @@ import 'package:uber_clone/search_screen.dart';
 import 'package:uber_clone/settings.dart';
 import 'package:uber_clone/welcome_page.dart';
 import 'package:uber_clone/where_to.dart';
-import 'package:uber_clone/widgets/search_destination.dart';
+import 'package:uber_clone/search_destination.dart';
 import 'phone_verification.dart';
 import 'package:provider/provider.dart';
 import 'package:uber_clone/models/auth_model.dart';
