@@ -25,11 +25,16 @@ class _PickUpLocationState extends State<PickUpLocation> {
     setState(() {
       fetchingInfo = true;
     });
-    SearchApi.convertCoordinatesToAddress(
-            locationSelectorKey.currentState.markerLocation)
-        .then((result) {
+    var search = SearchApi.convertCoordinatesToAddress(
+        locationSelectorKey.currentState.markerLocation);
+    search.then((result) {
       setState(() {
         pickUpSpot = result;
+        fetchingInfo = false;
+      });
+    });
+    search.catchError((err) {
+      setState(() {
         fetchingInfo = false;
       });
     });
@@ -39,8 +44,6 @@ class _PickUpLocationState extends State<PickUpLocation> {
   Widget build(BuildContext context) {
     //set markerLocation and pickupSpot on first build only to allow it to be changed later on
     if (buildCount == 0) {
-      pickUpSpot =
-          Provider.of<LocationModel>(context, listen: false).pickUpLocationInfo;
       markerLocation = LatLng(
           Provider.of<LocationModel>(context, listen: false)
               .currentLocation
@@ -123,7 +126,7 @@ class _PickUpLocationState extends State<PickUpLocation> {
                       children: <Widget>[
                         Expanded(
                           child: Text(
-                            '${pickUpSpot.name}',
+                            pickUpSpot != null ? '${pickUpSpot.name}' : "",
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
@@ -153,7 +156,9 @@ class _PickUpLocationState extends State<PickUpLocation> {
                     padding: EdgeInsets.only(bottom: height(context) * 0.02),
                     child: FlatButton(
                       onPressed: () {
-                        if (fetchingInfo != true) {
+                        if (pickUpSpot != null &&
+                            markerLocation != null &&
+                            fetchingInfo == false) {
                           Provider.of<LocationModel>(context, listen: false)
                               .setPickupLocationInfo(pickUpSpot);
                           Provider.of<LocationModel>(context, listen: false)

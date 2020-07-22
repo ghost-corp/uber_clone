@@ -13,7 +13,6 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
-
   int buildCount = 0;
   Place address;
   LatLng markerLocation;
@@ -25,12 +24,17 @@ class _SearchScreenState extends State<SearchScreen> {
     setState(() {
       fetchingInfo = true;
     });
-    SearchApi.convertCoordinatesToAddress(
-        locationSelectorKey.currentState.markerLocation)
-        .then((result) {
+    var search = SearchApi.convertCoordinatesToAddress(
+        locationSelectorKey.currentState.markerLocation);
+    search.then((result) {
       setState(() {
         address = result;
         controller.text = address.name;
+        fetchingInfo = false;
+      });
+    });
+    search.catchError((err) {
+      setState(() {
         fetchingInfo = false;
       });
     });
@@ -38,10 +42,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     if (buildCount == 0) {
-      address =
-          Provider.of<LocationModel>(context, listen: false).pickUpLocationInfo;
       markerLocation = LatLng(
           Provider.of<LocationModel>(context, listen: false)
               .currentLocation
@@ -58,9 +59,7 @@ class _SearchScreenState extends State<SearchScreen> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         title: Container(
-            padding: EdgeInsets.only(
-                bottom: 3
-            ),
+            padding: EdgeInsets.only(bottom: 3),
             width: width(context) * 0.8,
             height: 40,
             child: TextFormField(
@@ -70,17 +69,12 @@ class _SearchScreenState extends State<SearchScreen> {
                   filled: true,
                   fillColor: Colors.grey[100],
                   focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                          color: Colors.grey[100])),
+                      borderSide: BorderSide(color: Colors.grey[100])),
                   border: OutlineInputBorder(
-                      borderSide: BorderSide(
-                          color: Colors.grey[100])),
+                      borderSide: BorderSide(color: Colors.grey[100])),
                   enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                          color: Colors.grey[100]))
-              ),
-            )
-        ),
+                      borderSide: BorderSide(color: Colors.grey[100]))),
+            )),
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back,
@@ -104,30 +98,35 @@ class _SearchScreenState extends State<SearchScreen> {
               getSearchResult();
             },
           ),
+          fetchingInfo == true
+              ? Align(
+                  alignment: Alignment.topCenter,
+                  child: LinearProgressIndicator(),
+                )
+              : Container(height: 0, width: 0, color: Colors.transparent),
           Align(
             alignment: Alignment.bottomCenter,
             child: Padding(
-              padding: EdgeInsets.only(
-                bottom: 15
-              ),
+              padding: EdgeInsets.only(bottom: 15),
               child: FlatButton(
                 child: Text(
                   'DONE',
                   style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 18
-                  ),
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 18),
                 ),
-                padding: EdgeInsets.symmetric(
-                  horizontal: 120, vertical: 15
-                ),
+                padding: EdgeInsets.symmetric(horizontal: 120, vertical: 15),
                 color: Colors.black,
                 onPressed: () {
-                  Provider.of<AuthModel>(context, listen: false).saveAddress(address);
-                  Navigator.of(context).popUntil(
-                    ModalRoute.withName("choose_saved")
-                  );
+                  if (address != null &&
+                      markerLocation != null &&
+                      fetchingInfo == false) {
+                    Provider.of<AuthModel>(context, listen: false)
+                        .saveAddress(address);
+                    Navigator.of(context)
+                        .popUntil(ModalRoute.withName("choose_saved"));
+                  }
                 },
               ),
             ),
