@@ -47,25 +47,34 @@ class HomePageBottomNav extends StatelessWidget {
         ),
         Padding(
           padding: EdgeInsets.only(
-              left: MediaQuery.of(context).size.height * 0.055,
               bottom: MediaQuery.of(context).size.height * 0.03,
               top: MediaQuery.of(context).size.height * 0.01),
-          child: Row(
-            children: <Widget>[
-              Icon(
-                Icons.stars,
-                color: Colors.grey,
-                size: MediaQuery.of(context).size.height * 0.05,
-              ),
-              Padding(
-                padding:
-                    EdgeInsets.all(MediaQuery.of(context).size.height * 0.01),
-                child: Text(
-                  "Choose a saved place",
-                  style: TextStyle(fontWeight: FontWeight.w500),
+          child: InkWell(
+            onTap: () {
+              Navigator.of(context).pushNamed('choose_saved');
+            },
+            child: Row(
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.only(
+                    left: MediaQuery.of(context).size.height * 0.055,
+                  ),
+                  child: Icon(
+                    Icons.stars,
+                    color: Colors.grey,
+                    size: MediaQuery.of(context).size.height * 0.05,
+                  ),
                 ),
-              )
-            ],
+                Padding(
+                  padding:
+                      EdgeInsets.all(MediaQuery.of(context).size.height * 0.01),
+                  child: Text(
+                    "Choose a saved place",
+                    style: TextStyle(fontWeight: FontWeight.w500),
+                  ),
+                )
+              ],
+            ),
           ),
         )
       ],
