@@ -31,15 +31,18 @@ class AuthModel extends ChangeNotifier {
 
   Future<bool> saveAddress(Place place) async {
     try {
-      await Firestore.instance.collection("users").document(user.uid)
-          .collection("saved places").add({
+      await Firestore.instance
+          .collection("users")
+          .document(user.uid)
+          .collection("saved places")
+          .add({
         "longitude": place.longitude,
         "latitude": place.latitude,
         "name": place.name,
         "formatted_address": place.formattedAddress,
         "place_id": place.placeId
       });
-    } catch(e) {
+    } catch (e) {
       return false;
     }
     return true;
