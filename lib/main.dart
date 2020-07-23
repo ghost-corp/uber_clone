@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:uber_clone/choose_saved.dart';
+import 'package:uber_clone/chat/chat_screen.dart';
+import 'package:uber_clone/saved_places/choose_saved.dart';
 import 'package:uber_clone/confirm_screen.dart';
 import 'package:uber_clone/discount.dart';
 import 'package:uber_clone/edit_account.dart';
@@ -10,11 +11,11 @@ import 'package:uber_clone/models/location_model.dart';
 import 'package:uber_clone/payment.dart';
 import 'package:uber_clone/phonenumber.dart';
 import 'package:uber_clone/pickup_location.dart';
-import 'package:uber_clone/search_screen.dart';
+import 'package:uber_clone/saved_places/search_screen.dart';
 import 'package:uber_clone/settings.dart';
 import 'package:uber_clone/welcome_page.dart';
 import 'package:uber_clone/where_to.dart';
-import 'package:uber_clone/search_destination.dart';
+import 'package:uber_clone/saved_places/search_destination.dart';
 import 'phone_verification.dart';
 import 'package:provider/provider.dart';
 import 'package:uber_clone/models/auth_model.dart';
@@ -65,7 +66,8 @@ class MyApp extends StatelessWidget {
         "edit_account": (context) => EditAccount(),
         "choose_saved": (context) => ChooseSavedDestination(),
         "search_destination": (context) => SearchDestination(),
-        "search_screen": (context) => SearchScreen()
+        "search_screen": (context) => SearchScreen(),
+        "chat_screen": (context) => ChatScreen()
       },
       initialRoute: "welcome_page",
     );

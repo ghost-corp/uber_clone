@@ -137,10 +137,19 @@ class DriverInfo extends StatelessWidget {
                 width: width(context) * 0.6,
                 height: 40,
                 child: TextField(
+                  onTap: () {
+                    Navigator.of(context).pushNamed("chat_screen");
+                  },
+                  readOnly: true,
                   decoration: InputDecoration(
                       contentPadding: EdgeInsets.all(12),
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(24))),
+                      disabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(24)),
+                        borderSide: BorderSide(color: Colors.grey[200])
+                      )
+                      ,
                       hintText: 'Any pickup notes?',
                       hintStyle: TextStyle(color: Colors.grey)),
                 ),
