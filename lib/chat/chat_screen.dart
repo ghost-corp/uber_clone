@@ -18,9 +18,7 @@ class _ChatScreenState extends State<ChatScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Container(
-              padding: EdgeInsets.only(
-                bottom: 40, top: 40, left: 5, right: 5
-              ),
+              padding: EdgeInsets.only(bottom: 40, top: 40, left: 5, right: 5),
               height: height(context) * 0.15,
               width: width(context),
               child: Row(
@@ -51,22 +49,18 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
                 child: Container(
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(24),
-                      topRight: Radius.circular(24)
-                    )
-                  ),
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(24),
+                          topRight: Radius.circular(24))),
                   width: width(context),
                   child: ListView(
-                    children: <Widget>[
-
-                    ],
+                    children: <Widget>[],
                   ),
                 ),
               ),
             ),
             Container(
-              padding: EdgeInsets.only(left: 8, bottom: 8),
+                padding: EdgeInsets.only(left: 8, bottom: 8),
                 decoration: BoxDecoration(color: Colors.white),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -74,36 +68,26 @@ class _ChatScreenState extends State<ChatScreen> {
                   children: <Widget>[
                     Expanded(
                       child: TextFormField(
-                        onTap: () {
-                        },
+                        onTap: () {},
                         textCapitalization: TextCapitalization.sentences,
-                        style: TextStyle(
-                            height: 1,
-                            fontSize: 16
-                        ),
+                        style: TextStyle(height: 1, fontSize: 16),
                         keyboardType: TextInputType.multiline,
                         maxLength: null,
                         maxLines: null,
                         decoration: InputDecoration(
-                          hintText: 'Enter a message',
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.black,
-                              style: BorderStyle.solid,
-                            ),
-                            borderRadius: BorderRadius.circular(36.0)
-                          ),
-                          contentPadding: EdgeInsets.only(
-                            left: 12, top: 12, bottom: 12, right: 12
-                          )
-                        ),
+                            hintText: 'Enter a message',
+                            border: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Colors.black,
+                                  style: BorderStyle.solid,
+                                ),
+                                borderRadius: BorderRadius.circular(36.0)),
+                            contentPadding: EdgeInsets.only(
+                                left: 12, top: 12, bottom: 12, right: 12)),
                       ),
                     ),
-
                     FlatButton(
-                      padding: EdgeInsets.symmetric(
-                        vertical: 6, horizontal: 6
-                      ),
+                      padding: EdgeInsets.symmetric(vertical: 6, horizontal: 6),
                       color: Colors.black,
                       shape: CircleBorder(),
                       child: Icon(

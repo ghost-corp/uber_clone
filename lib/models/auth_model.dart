@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:uber_clone/api/search_api.dart';
 
+FirebaseUser globalUser;
+UserDetails globalUserDetails;
+
 class AuthModel extends ChangeNotifier {
   FirebaseUser user;
   UserDetails userDetails;
@@ -15,11 +18,13 @@ class AuthModel extends ChangeNotifier {
   AuthModel() {
     authStateStream = FirebaseAuth.instance.onAuthStateChanged.listen((user) {
       this.user = user;
+      globalUser = user;
       notifyListeners();
       try {
         if (user != null) {
           userDetailsSub = _getUserDetails().asStream().listen((val) {
             userDetails = val;
+            globalUserDetails = val;
             notifyListeners();
           });
         }
@@ -58,6 +63,7 @@ class AuthModel extends ChangeNotifier {
       });
       userDetailsSub = _getUserDetails().asStream().listen((val) {
         userDetails = val;
+        globalUserDetails = val;
         notifyListeners();
       });
     } catch (err) {
@@ -76,6 +82,7 @@ class AuthModel extends ChangeNotifier {
       });
       userDetailsSub = _getUserDetails().asStream().listen((val) {
         userDetails = val;
+        globalUserDetails = val;
         notifyListeners();
       });
     } catch (err) {

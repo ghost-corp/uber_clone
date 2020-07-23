@@ -207,7 +207,7 @@ class HomeBodyState extends State<HomeBody> {
               return NavOptions();
             }
             if (locationModel.mapMode == MapMode.AwaitingDriver) {
-              return DriverInfo();
+              return DriverInfo(driver: locationModel.getNearestDriver());
             }
             return HomePageBottomNav();
           },

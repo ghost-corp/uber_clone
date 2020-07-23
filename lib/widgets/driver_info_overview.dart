@@ -2,9 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:uber_clone/global/screen_size.dart';
 import 'package:provider/provider.dart';
+import 'package:uber_clone/models/driver_model.dart';
 import 'package:uber_clone/models/location_model.dart';
 
 class DriverInfo extends StatelessWidget {
+  final Driver driver;
+  DriverInfo({this.driver});
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -86,7 +89,7 @@ class DriverInfo extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Text(
-                'Tuksa',
+                '${driver.firstName}',
                 style: TextStyle(
                     color: Colors.indigo,
                     fontWeight: FontWeight.w500,
@@ -146,10 +149,8 @@ class DriverInfo extends StatelessWidget {
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(24))),
                       disabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(24)),
-                        borderSide: BorderSide(color: Colors.grey[200])
-                      )
-                      ,
+                          borderRadius: BorderRadius.all(Radius.circular(24)),
+                          borderSide: BorderSide(color: Colors.grey[200])),
                       hintText: 'Any pickup notes?',
                       hintStyle: TextStyle(color: Colors.grey)),
                 ),
