@@ -256,6 +256,9 @@ class ConfirmScreenBottomNavState extends State<ConfirmScreenBottomNav> {
                                 setState(() {
                                   confirmedButtonPressed = true;
                                 });
+                                Provider.of<LocationModel>(context,
+                                        listen: false)
+                                    .sendRideRequests();
                                 Timer(Duration(seconds: 3), () {
                                   Navigator.popUntil(context,
                                       ModalRoute.withName('welcome_page'));
