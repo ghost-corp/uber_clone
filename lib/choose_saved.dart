@@ -12,7 +12,6 @@ class ChooseSavedDestination extends StatefulWidget {
 class _ChooseSavedDestinationState extends State<ChooseSavedDestination> {
   @override
   Widget build(BuildContext context) {
-
     String userId = Provider.of<AuthModel>(context, listen: false).user.uid;
 
     return Scaffold(
@@ -21,10 +20,7 @@ class _ChooseSavedDestinationState extends State<ChooseSavedDestination> {
         title: Text(
           'Choose a destination',
           style: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.w300,
-            color: Colors.black
-          ),
+              fontSize: 22, fontWeight: FontWeight.w300, color: Colors.black),
         ),
         leading: IconButton(
           icon: Icon(
@@ -37,25 +33,25 @@ class _ChooseSavedDestinationState extends State<ChooseSavedDestination> {
         ),
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: Firestore.instance.collection('users').document(userId)
-        .collection('saved places').snapshots(),
+        stream: Firestore.instance
+            .collection('users')
+            .document(userId)
+            .collection('saved places')
+            .snapshots(),
         builder: (BuildContext context, snapshot) {
-
-          if(!snapshot.hasData || snapshot.hasError || snapshot.data.documents.isEmpty)
+          if (!snapshot.hasData ||
+              snapshot.hasError ||
+              snapshot.data.documents.isEmpty)
             return ListView(
               children: <Widget>[
                 ListTile(
                   title: Text(
                     'Add saved place',
-                    style: TextStyle(
-                        color: Colors.indigo
-                    ),
+                    style: TextStyle(color: Colors.indigo),
                   ),
                   subtitle: Text(
                     'Get to your favourite destination faster',
-                    style: TextStyle(
-                        color: Colors.grey
-                    ),
+                    style: TextStyle(color: Colors.grey),
                   ),
                   onTap: () {
                     Navigator.of(context).pushNamed("search_destination");
@@ -72,19 +68,17 @@ class _ChooseSavedDestinationState extends State<ChooseSavedDestination> {
             places.add(Place.fromJson(element.data));
           });
 
-          placeWidget = places.map((e) => Column(
-            children: <Widget>[
-              ListTile(
-                title: Text(
-                  e.formattedAddress
-                ),
-                subtitle: Text(
-                  e.name
-                ),
-              ),
-              Divider()
-            ],
-          )).toList();
+          placeWidget = places
+              .map((e) => Column(
+                    children: <Widget>[
+                      ListTile(
+                        title: Text(e.formattedAddress),
+                        subtitle: Text(e.name),
+                      ),
+                      Divider()
+                    ],
+                  ))
+              .toList();
 
           return ListView(
             children: <Widget>[
@@ -92,15 +86,11 @@ class _ChooseSavedDestinationState extends State<ChooseSavedDestination> {
               ListTile(
                 title: Text(
                   'Add saved place',
-                  style: TextStyle(
-                      color: Colors.indigo
-                  ),
+                  style: TextStyle(color: Colors.indigo),
                 ),
                 subtitle: Text(
                   'Get to your favourite destination faster',
-                  style: TextStyle(
-                      color: Colors.grey
-                  ),
+                  style: TextStyle(color: Colors.grey),
                 ),
                 onTap: () {
                   Navigator.of(context).pushNamed("search_destination");
