@@ -1,6 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:uber_clone/global/screen_size.dart';
+import 'package:uber_clone/models/auth_model.dart';
 import 'package:uber_clone/models/trip_model.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -34,12 +37,21 @@ class DriverInfo extends StatelessWidget {
                           CircleBorder(side: BorderSide(color: Colors.black)),
                       child: Icon(Icons.clear),
                       onPressed: () {
-                        Scaffold.of(context).showSnackBar(SnackBar(
-                          content: Text("Not yet implemented"),
-                          behavior: SnackBarBehavior.floating,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20)),
-                        ));
+                        Firestore.instance
+                            .collection("users")
+                            .document(
+                                Provider.of<AuthModel>(context, listen: false)
+                                    .user
+                                    .uid)
+                            .collection("currentTrip")
+                            .document("tripDetails")
+                            .delete();
+                        Firestore.instance
+                            .collection("drivers")
+                            .document(trip.driverId)
+                            .collection("currentTrip")
+                            .document("tripDetails")
+                            .delete();
                       },
                     ),
                     Padding(

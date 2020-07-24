@@ -10,7 +10,6 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-
   TextEditingController messageController = TextEditingController();
   ScrollController scroll = ScrollController();
 
@@ -61,29 +60,31 @@ class _ChatScreenState extends State<ChatScreen> {
                           topRight: Radius.circular(24))),
                   width: width(context),
                   child: StreamBuilder<QuerySnapshot>(
-                    stream: Firestore.instance.collection('users')
-                    .document(globalUser.uid).collection('messages').orderBy('timestamp', descending: false)
-                    .snapshots(),
+                    stream: Firestore.instance
+                        .collection('users')
+                        .document(globalUser.uid)
+                        .collection('messages')
+                        .orderBy('timestamp', descending: false)
+                        .snapshots(),
                     builder: (BuildContext context, snapshot) {
-
-                      if(!snapshot.hasData)
+                      if (!snapshot.hasData)
                         return Center(
                           child: CircularProgressIndicator(),
                         );
 
                       List<DocumentSnapshot> docs = snapshot.data.documents;
 
-                      List<Widget> chatMessages = docs.map((e) => MessageWidget(
-                        from: e.data['fromName'],
-                        message: e.data['message'],
-                        person: globalUser.uid == e.data['fromId'],
-                      )).toList();
+                      List<Widget> chatMessages = docs
+                          .map((e) => MessageWidget(
+                                from: e.data['fromName'],
+                                message: e.data['message'],
+                                person: globalUser.uid == e.data['fromId'],
+                              ))
+                          .toList();
 
                       return ListView(
                         controller: scroll,
-                        children: <Widget>[
-                          ...chatMessages
-                        ],
+                        children: <Widget>[...chatMessages],
                       );
                     },
                   ),
@@ -140,11 +141,13 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Future<void> sendMessage() async {
-    if(messageController.text.trim().length > 0) {
+    if (messageController.text.trim().length > 0) {
       String message = messageController.text.trim();
       messageController.clear();
-      await Firestore.instance.collection("users")
-          .document(globalUser.uid).collection("messages")
+      await Firestore.instance
+          .collection("users")
+          .document(globalUser.uid)
+          .collection("messages")
           .add({
         'message': message,
         'fromId': globalUser.uid,
@@ -152,8 +155,7 @@ class _ChatScreenState extends State<ChatScreen> {
       });
       print('sent');
       scroll.animateTo(scroll.position.minScrollExtent,
-          duration: Duration(milliseconds: 300),
-          curve: Curves.easeOut);
+          duration: Duration(milliseconds: 300), curve: Curves.easeOut);
     }
   }
 }

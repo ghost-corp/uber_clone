@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class MessageWidget extends StatelessWidget {
-
   final String from;
   final String message;
   final Timestamp timestamp;
@@ -16,27 +15,25 @@ class MessageWidget extends StatelessWidget {
       padding: EdgeInsets.all(12),
       child: Column(
         crossAxisAlignment:
-        person ? CrossAxisAlignment.end: CrossAxisAlignment.start,
+            person ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: <Widget>[
           Container(
             decoration: BoxDecoration(
-                borderRadius: person ? BorderRadius.only(
-                    topRight: Radius.circular(12),
-                    topLeft: Radius.circular(12),
-                    bottomLeft: Radius.circular(12)
-                ) : BorderRadius.only(
-                    topRight: Radius.circular(12),
-                    topLeft: Radius.circular(12),
-                    bottomRight: Radius.circular(12)
-                ),
+              borderRadius: person
+                  ? BorderRadius.only(
+                      topRight: Radius.circular(12),
+                      topLeft: Radius.circular(12),
+                      bottomLeft: Radius.circular(12))
+                  : BorderRadius.only(
+                      topRight: Radius.circular(12),
+                      topLeft: Radius.circular(12),
+                      bottomRight: Radius.circular(12)),
               color: person ? Colors.black : Colors.grey[200],
             ),
             padding: EdgeInsets.all(12),
             child: Text(
               message,
-              style: TextStyle(
-                color: person ? Colors.white : Colors.black
-              ),
+              style: TextStyle(color: person ? Colors.white : Colors.black),
             ),
           )
         ],
