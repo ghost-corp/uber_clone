@@ -2,12 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:uber_clone/global/screen_size.dart';
 import 'package:provider/provider.dart';
-import 'package:uber_clone/models/driver_model.dart';
 import 'package:uber_clone/models/location_model.dart';
+import 'package:uber_clone/models/trip_model.dart';
 
 class DriverInfo extends StatelessWidget {
-  final Driver driver;
-  DriverInfo({this.driver});
+  final Trip trip;
+  DriverInfo({this.trip});
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -89,7 +89,7 @@ class DriverInfo extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Text(
-                '${driver.firstName}',
+                '${trip.driverName}',
                 style: TextStyle(
                     color: Colors.indigo,
                     fontWeight: FontWeight.w500,

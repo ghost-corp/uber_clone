@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:uber_clone/chat/chat_screen.dart';
+import 'package:uber_clone/models/trip_model.dart';
 import 'package:uber_clone/saved_places/choose_saved.dart';
 import 'package:uber_clone/confirm_screen.dart';
 import 'package:uber_clone/discount.dart';
@@ -31,6 +32,9 @@ void main() {
       ),
       ChangeNotifierProvider(
         create: (context) => AuthModel(),
+      ),
+      ChangeNotifierProvider(
+        create: (context) => TripModel(),
       )
     ],
     child: MyApp(),

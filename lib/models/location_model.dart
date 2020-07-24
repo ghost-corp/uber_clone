@@ -253,14 +253,8 @@ class LocationModel extends ChangeNotifier {
           .collection('tripRequests')
           .add({
         "riderId": globalUser.uid,
-        "firstName": globalUserDetails.firstName,
-        "lastName": globalUserDetails.lastName,
-        "phoneNumber": globalUserDetails.phoneNumber,
-        "destinationAddress": pickUpLocationInfo.formattedAddress,
-        "destinationCoords": [
-          pickUpLocationInfo.latitude,
-          pickUpLocationInfo.longitude
-        ]
+        "riderName": globalUserDetails.firstName,
+        "riderPhone": globalUserDetails.phoneNumber
       });
     });
   }
