@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:uber_clone/chat/message_widget.dart';
 import 'package:uber_clone/global/screen_size.dart';
+import 'package:uber_clone/models/auth_model.dart';
 
 class ChatScreen extends StatefulWidget {
   @override
@@ -7,6 +10,10 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+
+  TextEditingController messageController = TextEditingController();
+  ScrollController scroll = ScrollController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,8 +60,32 @@ class _ChatScreenState extends State<ChatScreen> {
                           topLeft: Radius.circular(24),
                           topRight: Radius.circular(24))),
                   width: width(context),
-                  child: ListView(
-                    children: <Widget>[],
+                  child: StreamBuilder<QuerySnapshot>(
+                    stream: Firestore.instance.collection('users')
+                    .document(globalUser.uid).collection('messages').orderBy('timestamp', descending: false)
+                    .snapshots(),
+                    builder: (BuildContext context, snapshot) {
+
+                      if(!snapshot.hasData)
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+
+                      List<DocumentSnapshot> docs = snapshot.data.documents;
+
+                      List<Widget> chatMessages = docs.map((e) => MessageWidget(
+                        from: e.data['fromName'],
+                        message: e.data['message'],
+                        person: globalUser.uid == e.data['fromId'],
+                      )).toList();
+
+                      return ListView(
+                        controller: scroll,
+                        children: <Widget>[
+                          ...chatMessages
+                        ],
+                      );
+                    },
                   ),
                 ),
               ),
@@ -68,6 +99,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   children: <Widget>[
                     Expanded(
                       child: TextFormField(
+                        controller: messageController,
                         onTap: () {},
                         textCapitalization: TextCapitalization.sentences,
                         style: TextStyle(height: 1, fontSize: 16),
@@ -96,7 +128,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         size: 30,
                       ),
                       onPressed: () {
-                        //TODO
+                        sendMessage();
                       },
                     )
                   ],
@@ -105,5 +137,23 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> sendMessage() async {
+    if(messageController.text.trim().length > 0) {
+      String message = messageController.text.trim();
+      messageController.clear();
+      await Firestore.instance.collection("users")
+          .document(globalUser.uid).collection("messages")
+          .add({
+        'message': message,
+        'fromId': globalUser.uid,
+        'timestamp': Timestamp.now()
+      });
+      print('sent');
+      scroll.animateTo(scroll.position.minScrollExtent,
+          duration: Duration(milliseconds: 300),
+          curve: Curves.easeOut);
+    }
   }
 }
