@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_map_polyutil/google_map_polyutil.dart';
@@ -9,6 +10,7 @@ import 'package:uber_clone/api/polyline_api.dart';
 import 'package:uber_clone/api/search_api.dart';
 import 'package:uber_clone/models/driver_model.dart';
 import 'package:polyline/polyline.dart' as poly;
+import 'package:uber_clone/models/auth_model.dart';
 
 class LocationModel extends ChangeNotifier {
   //location attributes
@@ -19,7 +21,6 @@ class LocationModel extends ChangeNotifier {
   Place currentLocationInfo = new Place();
   Place pickUpLocationInfo = new Place();
   Place dropOffLocationInfo = new Place();
-  List<Driver> nearbyDrivers = new List();
   Timer timer;
 
   //navigation variables
@@ -32,14 +33,37 @@ class LocationModel extends ChangeNotifier {
   //map mode
   MapMode mapMode = MapMode.NearestDriver;
 
+  //nearbyDrivers
+  List<Driver> nearbyDrivers = new List();
+  StreamSubscription nearbyDriversStream;
+
+  //ride
+//  StreamSubscription ride
+
   LocationModel() {
     setLocation();
+    nearbyDriversStream = Firestore.instance
+        .collection('drivers')
+        .where("isOnline", isEqualTo: true)
+        .snapshots()
+        .listen((driversSnapshot) {
+      nearbyDrivers = new List();
+      driversSnapshot.documents.forEach((driverSnap) {
+        nearbyDrivers.add(Driver.fromJson(driverSnap.data));
+      });
+      notifyListeners();
+    });
+  }
+
+  void cancelSubs() {
+    nearbyDriversStream.cancel();
   }
 
   void setMapMode(MapMode mode) async {
     mapMode = mode;
     if (mode == MapMode.DestinationNavigation) {
       timer.cancel();
+      nearbyDriversStream.cancel();
       timer = Timer.periodic(Duration(seconds: 4), (timer) async {
         currentLocation = await location.getLocation();
         bool onPath = false;
@@ -82,14 +106,25 @@ class LocationModel extends ChangeNotifier {
     } else if (mode == MapMode.NearestDriver) {
       await location.changeSettings(accuracy: LocationAccuracy.navigation);
       timer.cancel();
-      timer = Timer.periodic(Duration(seconds: 30), (timer) async {
+      timer = Timer.periodic(Duration(seconds: 20), (timer) async {
         currentLocation = await location.getLocation();
         currentLocationInfo = await SearchApi.convertCoordinatesToAddress(
             LatLng(currentLocation.latitude, currentLocation.longitude));
         notifyListeners();
       });
+      nearbyDriversStream = Firestore.instance
+          .collection('drivers')
+          .where("isOnline", isEqualTo: true)
+          .snapshots()
+          .listen((driversSnapshot) {
+        driversSnapshot.documents.forEach((driverSnap) {
+          nearbyDrivers.add(Driver.fromJson(driverSnap.data));
+        });
+        notifyListeners();
+      });
     } else if (mode == MapMode.AwaitingDriver) {
       timer.cancel();
+      nearbyDriversStream.cancel();
     }
     notifyListeners();
   }
@@ -196,8 +231,8 @@ class LocationModel extends ChangeNotifier {
     currentLocation = await location.getLocation();
     currentLocationInfo = await SearchApi.convertCoordinatesToAddress(
         LatLng(currentLocation.latitude, currentLocation.longitude));
-    nearbyDrivers = DriverModel.getDummyDrivers(
-        LatLng(currentLocation.latitude, currentLocation.longitude));
+//    nearbyDrivers = DriverModel.getDummyDrivers(
+//        LatLng(currentLocation.latitude, currentLocation.longitude));
     notifyListeners();
 
     //update user location as it changes
@@ -207,6 +242,28 @@ class LocationModel extends ChangeNotifier {
       currentLocationInfo = await SearchApi.convertCoordinatesToAddress(
           LatLng(currentLocation.latitude, currentLocation.longitude));
       notifyListeners();
+    });
+  }
+
+  void sendRideRequests() async {
+    nearbyDrivers.forEach((driver) {
+      Firestore.instance
+          .collection('drivers')
+          .document(driver.driverId)
+          .collection('tripRequests')
+          .add({
+        "riderId": globalUser.uid,
+        "riderName": globalUserDetails.firstName,
+        "riderPhone": globalUserDetails.phoneNumber,
+        "riderDestinationCoords": [
+          dropOffLocationInfo.latitude,
+          dropOffLocationInfo.longitude
+        ],
+        "riderPickupCoords": [
+          pickUpLocationInfo.latitude,
+          pickUpLocationInfo.longitude
+        ]
+      });
     });
   }
 }

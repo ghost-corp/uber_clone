@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:uber_clone/api/polyline_api.dart';
+import 'package:uber_clone/confirm_screen.dart';
 import 'package:uber_clone/home/bottom_nav.dart';
 import 'package:uber_clone/home/drawer_option.dart';
 import 'package:uber_clone/home/nav_options.dart';
-import 'package:uber_clone/models/driver_model.dart';
 import 'package:uber_clone/models/location_model.dart';
+import 'package:uber_clone/models/trip_model.dart';
+import 'package:uber_clone/waitng_screen.dart';
 import 'package:uber_clone/widgets/NavMap.dart';
-import 'package:uber_clone/widgets/driver_info_overview.dart';
-import 'package:uber_clone/widgets/overview.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -27,7 +26,18 @@ class HomePageState extends State<HomePage> {
         width: MediaQuery.of(context).size.width * 0.8,
         child: SideDrawerOption(),
       ),
-      body: HomeBody(scaffoldKey: key),
+      body: Consumer<TripModel>(
+        builder: (context, tripModel, _) {
+          if (tripModel.connectToDriver == true) {
+            return ConfirmPickUpScreen();
+          }
+
+          if (tripModel.currentTrip == null) {
+            return HomeBody(scaffoldKey: key);
+          }
+          return WaitingScreen();
+        },
+      ),
     );
   }
 }
@@ -82,41 +92,6 @@ class HomeBodyState extends State<HomeBody> {
                 builder: (context, locationModel, child) {
                   if (locationModel.currentLocation == null) {
                     return Container();
-                  }
-
-                  if (locationModel.mapMode == MapMode.AwaitingDriver) {
-                    LatLng pickup = LatLng(
-                        locationModel.pickUpLocationInfo.latitude,
-                        locationModel.pickUpLocationInfo.longitude);
-                    Driver nearestDriver = locationModel.getNearestDriver();
-
-                    Future<List<Polyline>> getPolyline() async {
-                      Map result = await PolylineApi.getPolyLines(
-                          pickup, nearestDriver.liveLocation);
-                      List<LatLng> coords = result['polyline'];
-                      List<Polyline> line = [
-                        Polyline(
-                            polylineId: PolylineId("driver distance"),
-                            width: 3,
-                            points: coords)
-                      ];
-                      if (line == null) {
-                        return getPolyline();
-                      }
-                      if (line.length == 0) {
-                        return getPolyline();
-                      }
-                      return line;
-                    }
-
-                    return DistanceOverview(
-                      firstLocation: LatLng(
-                          locationModel.pickUpLocationInfo.latitude,
-                          locationModel.pickUpLocationInfo.longitude),
-                      secondLocation: nearestDriver.liveLocation,
-                      firstLocationMarkerIcon: driverIcon,
-                      getPolyline: () => getPolyline(),
-                    );
                   }
 
                   if (locationModel.mapMode == MapMode.DestinationNavigation) {
@@ -206,12 +181,9 @@ class HomeBodyState extends State<HomeBody> {
             if (locationModel.mapMode == MapMode.DestinationNavigation) {
               return NavOptions();
             }
-            if (locationModel.mapMode == MapMode.AwaitingDriver) {
-              return DriverInfo();
-            }
             return HomePageBottomNav();
           },
-        )
+        ),
       ],
     );
   }

@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:uber_clone/global/screen_size.dart';
 import 'package:provider/provider.dart';
 import 'package:uber_clone/models/location_model.dart';
+import 'package:uber_clone/models/trip_model.dart';
 
 class DriverInfo extends StatelessWidget {
+  final Trip trip;
+  DriverInfo({this.trip});
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -32,8 +35,14 @@ class DriverInfo extends StatelessWidget {
                           CircleBorder(side: BorderSide(color: Colors.black)),
                       child: Icon(Icons.clear),
                       onPressed: () {
-                        Provider.of<LocationModel>(context, listen: false)
-                            .setMapMode(MapMode.NearestDriver);
+//                        Provider.of<LocationModel>(context, listen: false)
+//                            .setMapMode(MapMode.NearestDriver);
+                        Scaffold.of(context).showSnackBar(SnackBar(
+                          content: Text("Not yet implemented"),
+                          behavior: SnackBarBehavior.floating,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20)),
+                        ));
                       },
                     ),
                     Padding(
@@ -86,7 +95,7 @@ class DriverInfo extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Text(
-                'Tuksa',
+                '${trip.driverName}',
                 style: TextStyle(
                     color: Colors.indigo,
                     fontWeight: FontWeight.w500,
@@ -146,10 +155,8 @@ class DriverInfo extends StatelessWidget {
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(24))),
                       disabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(24)),
-                        borderSide: BorderSide(color: Colors.grey[200])
-                      )
-                      ,
+                          borderRadius: BorderRadius.all(Radius.circular(24)),
+                          borderSide: BorderSide(color: Colors.grey[200])),
                       hintText: 'Any pickup notes?',
                       hintStyle: TextStyle(color: Colors.grey)),
                 ),
