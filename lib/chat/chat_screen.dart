@@ -12,9 +12,11 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   TextEditingController messageController = TextEditingController();
   ScrollController scroll = ScrollController();
+  String driverId;
 
   @override
   Widget build(BuildContext context) {
+    driverId = ModalRoute.of(context).settings.arguments;
     return Scaffold(
       backgroundColor: Colors.black12,
       body: Container(
@@ -151,6 +153,7 @@ class _ChatScreenState extends State<ChatScreen> {
           .add({
         'message': message,
         'fromId': globalUser.uid,
+        'toId': driverId,
         'timestamp': Timestamp.now()
       });
       print('sent');

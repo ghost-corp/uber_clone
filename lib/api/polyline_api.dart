@@ -1,6 +1,7 @@
 import 'package:polyline/polyline.dart' as poly;
 import 'package:http/http.dart' as http;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:uber_clone/global/api_key.dart';
 import 'dart:convert';
 
 import 'package:uber_clone/models/location_model.dart';
@@ -15,7 +16,7 @@ class PolylineApi {
       poly.Polyline polyline;
       final response = await http.get(
           'https://maps.googleapis.com/maps/api/directions/json?origin=${pickUp.latitude},${pickUp.longitude}'
-          '&destination=${dropOff.latitude},${dropOff.longitude}&key=AIzaSyDS1Eq6__8-Cfb1_vizG1w9jPza8gkjhvI');
+          '&destination=${dropOff.latitude},${dropOff.longitude}&key=$api_key');
       if (response.statusCode == 200) {
         print(response.body);
         print(json.decode(response.body));

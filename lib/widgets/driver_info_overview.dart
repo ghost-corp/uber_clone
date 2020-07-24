@@ -157,7 +157,8 @@ class DriverInfo extends StatelessWidget {
                 height: 40,
                 child: TextField(
                   onTap: () {
-                    Navigator.of(context).pushNamed("chat_screen");
+                    Navigator.of(context)
+                        .pushNamed("chat_screen", arguments: trip.driverId);
                   },
                   readOnly: true,
                   decoration: InputDecoration(
