@@ -50,7 +50,7 @@ class Trip {
       this.driverName,
       this.driverPhone,
       this.destinationCoords,
-        this.driverCoords,
+      this.driverCoords,
       this.pickupCoords});
 
   factory Trip.fromJson(Map<String, dynamic> json) {
@@ -61,7 +61,7 @@ class Trip {
       destinationCoords:
           LatLng(json['destinationCoords'][0], json['destinationCoords'][1]),
       pickupCoords: LatLng(json['pickupCoords'][0], json['pickupCoords'][1]),
-      driverCoords:  LatLng(json['driverCoords'][0], json['driverCoords'][1]),
+      driverCoords: LatLng(json['driverCoords'][0], json['driverCoords'][1]),
     );
   }
 }

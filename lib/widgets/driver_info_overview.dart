@@ -1,9 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:uber_clone/global/screen_size.dart';
-import 'package:provider/provider.dart';
-import 'package:uber_clone/models/location_model.dart';
 import 'package:uber_clone/models/trip_model.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DriverInfo extends StatelessWidget {
   final Trip trip;
@@ -35,8 +34,6 @@ class DriverInfo extends StatelessWidget {
                           CircleBorder(side: BorderSide(color: Colors.black)),
                       child: Icon(Icons.clear),
                       onPressed: () {
-//                        Provider.of<LocationModel>(context, listen: false)
-//                            .setMapMode(MapMode.NearestDriver);
                         Scaffold.of(context).showSnackBar(SnackBar(
                           content: Text("Not yet implemented"),
                           behavior: SnackBarBehavior.floating,
@@ -139,7 +136,8 @@ class DriverInfo extends StatelessWidget {
               IconButton(
                 icon: Icon(Icons.call),
                 onPressed: () {
-                  //TODO
+                  var url = "tel:${trip.driverPhone}";
+                  launch(url);
                 },
               ),
               Container(

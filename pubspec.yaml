@@ -39,6 +39,7 @@ dependencies:
   pin_code_text_field: ^1.5.1
   firebase_core: ^0.4.0+1
   cloud_firestore: ^0.12.9+4
+  url_launcher: ^5.5.0
 
 dev_dependencies:
   flutter_test:
