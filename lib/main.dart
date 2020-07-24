@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:overlay_support/overlay_support.dart';
 import 'package:uber_clone/chat/chat_screen.dart';
+import 'package:uber_clone/message_handler.dart' as myHandler;
 import 'package:uber_clone/models/trip_model.dart';
 import 'package:uber_clone/saved_places/choose_saved.dart';
 import 'package:uber_clone/confirm_screen.dart';
@@ -37,7 +39,9 @@ void main() {
         create: (context) => TripModel(),
       )
     ],
-    child: MyApp(),
+    child: OverlaySupport(
+      child: MyApp(),
+    ),
   ));
 }
 
@@ -64,7 +68,7 @@ class MyApp extends StatelessWidget {
                 if (authModel.user == null) {
                   return WelcomePage(title: "Uber Clone");
                 }
-                return HomePage();
+                return myHandler.MessageHandler(child: HomePage());
               },
             ),
         "edit_account": (context) => EditAccount(),

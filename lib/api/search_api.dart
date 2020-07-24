@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+import 'package:uber_clone/global/api_key.dart';
 import 'package:uber_clone/models/location_model.dart';
 import 'dart:convert';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -12,7 +13,7 @@ class SearchApi {
     http.Response response = await http.get(
         "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?"
         "input=$searchKey&inputtype=textquery&fields=formatted_address,name,place_id,geometry&"
-        "key=AIzaSyDS1Eq6__8-Cfb1_vizG1w9jPza8gkjhvI&"
+        "key=$api_key&"
         "locationbias=point:${Provider.of<LocationModel>(context, listen: false).currentLocation.latitude},"
         "${Provider.of<LocationModel>(context, listen: false).currentLocation.longitude}");
     if (response.statusCode == 200) {
@@ -29,9 +30,11 @@ class SearchApi {
         }
         return searchResult;
       } else {
+        print(JsonDecoder().convert(response.body));
         return null;
       }
     } else {
+      print(JsonDecoder().convert(response.body));
       return null;
     }
   }
@@ -39,7 +42,7 @@ class SearchApi {
   static Future<Place> convertCoordinatesToAddress(LatLng coordinates) async {
     Place searchResult;
     http.Response response = await http.get(
-        "https://maps.googleapis.com/maps/api/geocode/json?latlng=${coordinates.latitude},${coordinates.longitude}&key=AIzaSyDS1Eq6__8-Cfb1_vizG1w9jPza8gkjhvI");
+        "https://maps.googleapis.com/maps/api/geocode/json?latlng=${coordinates.latitude},${coordinates.longitude}&key=$api_key");
     if (response.statusCode == 200) {
       Map<String, dynamic> formattedResponse =
           JsonDecoder().convert(response.body);
@@ -55,9 +58,11 @@ class SearchApi {
             formattedResponse['results'][0]['geometry']['location']['lng'];
         return searchResult;
       } else {
+        print(JsonDecoder().convert(response.body));
         return null;
       }
     } else {
+      print(JsonDecoder().convert(response.body));
       return null;
     }
   }
