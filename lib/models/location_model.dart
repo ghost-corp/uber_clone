@@ -130,6 +130,9 @@ class LocationModel extends ChangeNotifier {
   }
 
   Driver getNearestDriver() {
+    if(nearbyDrivers.length==0){
+      return null;
+    }
     Driver nearestDriver = nearbyDrivers[0];
     double dist = 0;
     for (int x = 0; x < nearbyDrivers.length; x++) {
