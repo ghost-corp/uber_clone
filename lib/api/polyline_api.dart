@@ -17,6 +17,8 @@ class PolylineApi {
           'https://maps.googleapis.com/maps/api/directions/json?origin=${pickUp.latitude},${pickUp.longitude}'
           '&destination=${dropOff.latitude},${dropOff.longitude}&key=AIzaSyDS1Eq6__8-Cfb1_vizG1w9jPza8gkjhvI');
       if (response.statusCode == 200) {
+        print(response.body);
+        print(json.decode(response.body));
         polyline = poly.Polyline.Decode(
             precision: 5,
             encodedString: json.decode(response.body)['routes'][0]
