@@ -262,9 +262,9 @@ class ConfirmScreenBottomNavState extends State<ConfirmScreenBottomNav> {
                                 Timer(Duration(seconds: 3), () {
                                   Navigator.popUntil(context,
                                       ModalRoute.withName('welcome_page'));
-                                  Provider.of<LocationModel>(context,
-                                          listen: false)
-                                      .setMapMode(MapMode.AwaitingDriver);
+//                                  Provider.of<LocationModel>(context,
+//                                          listen: false)
+//                                      .setMapMode(MapMode.AwaitingDriver);
                                 });
                               },
                               padding: EdgeInsets.symmetric(
