@@ -8,6 +8,7 @@ import 'package:uber_clone/home/nav_options.dart';
 import 'package:uber_clone/models/driver_model.dart';
 import 'package:uber_clone/models/location_model.dart';
 import 'package:uber_clone/models/trip_model.dart';
+import 'package:uber_clone/waitng_screen.dart';
 import 'package:uber_clone/widgets/NavMap.dart';
 import 'package:uber_clone/widgets/driver_info_overview.dart';
 import 'package:uber_clone/widgets/overview.dart';
@@ -28,7 +29,14 @@ class HomePageState extends State<HomePage> {
         width: MediaQuery.of(context).size.width * 0.8,
         child: SideDrawerOption(),
       ),
-      body: HomeBody(scaffoldKey: key),
+      body: Consumer<TripModel>(
+        builder: (context, tripModel, _) {
+          if (tripModel.currentTrip == null) {
+            return HomeBody(scaffoldKey: key);
+          }
+          return WaitingScreen();
+        },
+      ),
     );
   }
 }
@@ -83,41 +91,6 @@ class HomeBodyState extends State<HomeBody> {
                 builder: (context, locationModel, child) {
                   if (locationModel.currentLocation == null) {
                     return Container();
-                  }
-
-                  if (locationModel.mapMode == MapMode.AwaitingDriver) {
-                    LatLng pickup = LatLng(
-                        locationModel.pickUpLocationInfo.latitude,
-                        locationModel.pickUpLocationInfo.longitude);
-                    Driver nearestDriver = locationModel.getNearestDriver();
-
-                    Future<List<Polyline>> getPolyline() async {
-                      Map result = await PolylineApi.getPolyLines(
-                          pickup, nearestDriver.liveLocation);
-                      List<LatLng> coords = result['polyline'];
-                      List<Polyline> line = [
-                        Polyline(
-                            polylineId: PolylineId("driver distance"),
-                            width: 3,
-                            points: coords)
-                      ];
-                      if (line == null) {
-                        return getPolyline();
-                      }
-                      if (line.length == 0) {
-                        return getPolyline();
-                      }
-                      return line;
-                    }
-
-                    return DistanceOverview(
-                      firstLocation: LatLng(
-                          locationModel.pickUpLocationInfo.latitude,
-                          locationModel.pickUpLocationInfo.longitude),
-                      secondLocation: nearestDriver.liveLocation,
-                      firstLocationMarkerIcon: driverIcon,
-                      getPolyline: () => getPolyline(),
-                    );
                   }
 
                   if (locationModel.mapMode == MapMode.DestinationNavigation) {
@@ -202,24 +175,14 @@ class HomeBodyState extends State<HomeBody> {
             ],
           ),
         ),
-        Consumer<TripModel>(
-          builder: (context, tripModel, _) {
-            if (tripModel.currentTrip == null) {
-              return Consumer<LocationModel>(
-                builder: (_, locationModel, __) {
-                  if (locationModel.mapMode == MapMode.DestinationNavigation) {
-                    return NavOptions();
-                  }
-                  return HomePageBottomNav();
-                },
-              );
+        Consumer<LocationModel>(
+          builder: (_, locationModel, __) {
+            if (locationModel.mapMode == MapMode.DestinationNavigation) {
+              return NavOptions();
             }
-
-            return DriverInfo(
-              trip: tripModel.currentTrip,
-            );
+            return HomePageBottomNav();
           },
-        )
+        ),
       ],
     );
   }
