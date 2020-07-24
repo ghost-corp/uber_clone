@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:uber_clone/api/search_api.dart';
 import 'package:uber_clone/global/screen_size.dart';
 import 'package:uber_clone/models/location_model.dart';
+import 'package:uber_clone/models/trip_model.dart';
 import 'package:uber_clone/widgets/map_location_selector.dart';
 
 class PickUpLocation extends StatefulWidget {
@@ -163,7 +164,10 @@ class _PickUpLocationState extends State<PickUpLocation> {
                               .setPickupLocationInfo(pickUpSpot);
                           Provider.of<LocationModel>(context, listen: false)
                               .resetOverviewLine();
-                          Navigator.of(context).pushNamed("confirm_screen");
+                          Provider.of<TripModel>(context, listen: false)
+                              .setConnectingToDriver(true);
+                          Navigator.popUntil(
+                              context, ModalRoute.withName('welcome_page'));
                         }
                       },
                       child: Text(
