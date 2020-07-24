@@ -12,16 +12,37 @@ class WaitingScreen extends StatefulWidget {
 }
 
 class WaitingScreenState extends State<WaitingScreen> {
+  BitmapDescriptor driverIcon;
+  int buildCount = 0;
+
+  void initializeMarkerIcons() {
+    if (driverIcon == null) {
+      final ImageConfiguration imageConfiguration =
+          createLocalImageConfiguration(context, size: Size(10, 10));
+      BitmapDescriptor.fromAssetImage(imageConfiguration, "images/taxi.png")
+          .then((value) {
+        setState(() {
+          driverIcon = value;
+        });
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (buildCount == 0 && driverIcon == null) {
+      initializeMarkerIcons();
+    }
+    if (buildCount < 1 && driverIcon != null) {
+      buildCount++;
+    }
     return Consumer<TripModel>(
       builder: (context, tripModel, _) {
         LatLng pickup = tripModel.currentTrip.pickupCoords;
         LatLng driverLocation = tripModel.currentTrip.driverCoords;
 
         Future<List<Polyline>> getPolyline() async {
-          Map result = await PolylineApi.getPolyLines(
-              pickup, driverLocation);
+          Map result = await PolylineApi.getPolyLines(pickup, driverLocation);
           List<LatLng> coords = result['polyline'];
           List<Polyline> line = [
             Polyline(
@@ -41,11 +62,32 @@ class WaitingScreenState extends State<WaitingScreen> {
         return Column(
           children: <Widget>[
             Expanded(
-              child: DistanceOverview(
-                firstLocation: pickup,
-                secondLocation: driverLocation,
-//          firstLocationMarkerIcon: driverIcon,
-                getPolyline: () => getPolyline(),
+              child: Stack(
+                children: <Widget>[
+                  DistanceOverview(
+                    firstLocation: pickup,
+                    secondLocation: driverLocation,
+                    secondLocationMarkerIcon: driverIcon,
+                    getPolyline: () => getPolyline(),
+                  ),
+                  SafeArea(
+                    child: Align(
+                      alignment: Alignment.topLeft,
+                      child: Padding(
+                        padding: EdgeInsets.all(10),
+                        child: GestureDetector(
+                          onTap: () {
+                            Scaffold.of(context).openDrawer();
+                          },
+                          child: Icon(
+                            Icons.menu,
+                            size: 35,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             DriverInfo(
