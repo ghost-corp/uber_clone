@@ -45,7 +45,6 @@ class PolylineApi {
 
   static List<LatLng> coordinatesConverter(poly.Polyline polyline) {
     var points = polyline.decodedCoords;
-    var s = polyline.unit;
     List<LatLng> coordinates = new List();
     points.forEach((element) {
       coordinates.add(LatLng(element[0], element[1]));

@@ -7,6 +7,7 @@ import 'package:uber_clone/models/auth_model.dart';
 class TripModel extends ChangeNotifier {
   StreamSubscription currentTripStream;
   Trip currentTrip;
+  bool connectToDriver = false;
 
   TripModel() {
     currentTripStream = Firestore.instance
@@ -19,6 +20,7 @@ class TripModel extends ChangeNotifier {
       if (tripSnapshot.data == null) {
         currentTrip = null;
       } else {
+        connectToDriver = false;
         currentTrip = Trip.fromJson(tripSnapshot.data);
       }
       notifyListeners();
@@ -27,6 +29,11 @@ class TripModel extends ChangeNotifier {
 
   void cancelSubs() {
     currentTripStream.cancel();
+  }
+
+  void setConnectingToDriver(bool value) {
+    connectToDriver = value;
+    notifyListeners();
   }
 }
 
@@ -50,30 +57,8 @@ class Trip {
       driverPhone: json['driverPhone'],
       driverId: json['driverId'],
       destinationCoords:
-          LatLng(json['destinationCoords'][0], json['destinationCoords'][0]),
-      pickupCoords: LatLng(json['pickupCoords'][0], json['pickupCoords'][0]),
+          LatLng(json['destinationCoords'][0], json['destinationCoords'][1]),
+      pickupCoords: LatLng(json['pickupCoords'][0], json['pickupCoords'][1]),
     );
-  }
-}
-
-class Place {
-  String formattedAddress;
-  String name;
-  String placeId;
-  double latitude;
-  double longitude;
-
-  Place(
-      {this.placeId = "",
-      this.name = "",
-      this.formattedAddress = "",
-      this.latitude = 0.0,
-      this.longitude = 0.0});
-
-  factory Place.fromJson(Map<String, dynamic> json) {
-    return Place(
-        formattedAddress: json['formatted_address'],
-        name: json['name'],
-        placeId: json['place_id']);
   }
 }

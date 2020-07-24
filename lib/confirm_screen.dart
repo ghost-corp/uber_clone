@@ -5,6 +5,7 @@ import 'package:uber_clone/api/polyline_api.dart';
 import 'package:uber_clone/global/screen_size.dart';
 import 'package:provider/provider.dart';
 import 'package:uber_clone/models/location_model.dart';
+import 'package:uber_clone/models/trip_model.dart';
 import 'package:uber_clone/widgets/overview.dart';
 
 class ConfirmPickUpScreen extends StatelessWidget {
@@ -71,7 +72,9 @@ class ConfirmPickUpScreen extends StatelessWidget {
                         color: Colors.black,
                       ),
                       onPressed: () {
-                        Navigator.pop(context);
+//                        Navigator.pop(context);
+                        Provider.of<TripModel>(context, listen: false)
+                            .setConnectingToDriver(false);
                       },
                     ),
                   ),
@@ -259,13 +262,6 @@ class ConfirmScreenBottomNavState extends State<ConfirmScreenBottomNav> {
                                 Provider.of<LocationModel>(context,
                                         listen: false)
                                     .sendRideRequests();
-                                Timer(Duration(seconds: 3), () {
-                                  Navigator.popUntil(context,
-                                      ModalRoute.withName('welcome_page'));
-//                                  Provider.of<LocationModel>(context,
-//                                          listen: false)
-//                                      .setMapMode(MapMode.AwaitingDriver);
-                                });
                               },
                               padding: EdgeInsets.symmetric(
                                   horizontal: width(context) * 0.25),

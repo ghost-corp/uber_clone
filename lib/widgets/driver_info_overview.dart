@@ -35,8 +35,14 @@ class DriverInfo extends StatelessWidget {
                           CircleBorder(side: BorderSide(color: Colors.black)),
                       child: Icon(Icons.clear),
                       onPressed: () {
-                        Provider.of<LocationModel>(context, listen: false)
-                            .setMapMode(MapMode.NearestDriver);
+//                        Provider.of<LocationModel>(context, listen: false)
+//                            .setMapMode(MapMode.NearestDriver);
+                        Scaffold.of(context).showSnackBar(SnackBar(
+                          content: Text("Not yet implemented"),
+                          behavior: SnackBarBehavior.floating,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20)),
+                        ));
                       },
                     ),
                     Padding(
