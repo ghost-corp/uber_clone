@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:uber_clone/api/polyline_api.dart';
@@ -12,33 +11,17 @@ class ConfirmPickUpScreen extends StatelessWidget {
   final GlobalKey mapKey = new GlobalKey();
   final GlobalKey<ConfirmScreenBottomNavState> bottomNavKey = new GlobalKey();
 
-  Future<List<Polyline>> getPolyLine(BuildContext context) async {
-    List<Polyline> line;
-    try {
-      var locationModel = Provider.of<LocationModel>(context, listen: false);
-      line = await locationModel.getOverViewPolyLines();
-      if (line == null) {
-        return getPolyLine(context);
-      }
-      if (line.length == 0) {
-        return getPolyLine(context);
-      }
-    } catch (err) {
-      print(err);
-    }
-    return line;
-  }
-
   @override
   Widget build(BuildContext context) {
     var locationModel = Provider.of<LocationModel>(context, listen: false);
-    return Scaffold(
-      body: Column(
-        children: <Widget>[
-          Expanded(
-            child: Stack(
-              children: <Widget>[
-                DistanceOverview(
+    return WillPopScope(
+      child: Scaffold(
+        body: Column(
+          children: <Widget>[
+            Expanded(
+              child: Stack(
+                children: <Widget>[
+                  DistanceOverview(
                     firstLocation: LatLng(
                         locationModel.pickUpLocationInfo.latitude,
                         locationModel.pickUpLocationInfo.longitude),
@@ -59,35 +42,40 @@ class ConfirmPickUpScreen extends StatelessWidget {
                             false;
                       });
                     },
-                    getPolyline: () => getPolyLine(context)),
-                Align(
-                  alignment: Alignment.topLeft,
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                        top: height(context) * 0.03,
-                        left: width(context) * 0.02),
-                    child: IconButton(
-                      icon: Icon(
-                        Icons.arrow_back,
-                        color: Colors.black,
-                      ),
-                      onPressed: () {
-//                        Navigator.pop(context);
-                        Provider.of<TripModel>(context, listen: false)
-                            .setConnectingToDriver(false);
-                      },
-                    ),
                   ),
-                )
-              ],
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                          top: height(context) * 0.03,
+                          left: width(context) * 0.02),
+                      child: IconButton(
+                        icon: Icon(
+                          Icons.arrow_back,
+                          color: Colors.black,
+                        ),
+                        onPressed: () {
+                          Provider.of<TripModel>(context, listen: false)
+                              .setConnectingToDriver(false);
+                        },
+                      ),
+                    ),
+                  )
+                ],
+              ),
             ),
-          ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: ConfirmScreenBottomNav(key: bottomNavKey),
-          )
-        ],
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: ConfirmScreenBottomNav(key: bottomNavKey),
+            )
+          ],
+        ),
       ),
+      onWillPop: () async {
+        Provider.of<TripModel>(context, listen: false)
+            .setConnectingToDriver(false);
+        return false;
+      },
     );
   }
 }

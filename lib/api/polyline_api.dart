@@ -14,9 +14,16 @@ class PolylineApi {
     Map<String, dynamic> result = new Map();
     try {
       poly.Polyline polyline;
-      final response = await http.get(
-          'https://maps.googleapis.com/maps/api/directions/json?origin=${pickUp.latitude},${pickUp.longitude}'
-          '&destination=${dropOff.latitude},${dropOff.longitude}&key=$api_key');
+      print("here.....................");
+      var response;
+      try {
+        response = await http.get(
+            'https://maps.googleapis.com/maps/api/directions/json?origin=${pickUp.latitude},${pickUp.longitude}'
+            '&destination=${dropOff.latitude},${dropOff.longitude}&key=$api_key');
+      } catch (err) {
+        print("first block");
+        return null;
+      }
       if (response.statusCode == 200) {
         print(response.body);
         print(json.decode(response.body));
@@ -34,12 +41,14 @@ class PolylineApi {
           steps.add(Step.fromJson(stepsTemp[x]));
         }
         result.putIfAbsent("steps", () => steps);
+        print("returning map..............");
         return result;
       } else {
+        print("failed..........................");
         return null;
       }
     } catch (err) {
-      print(err);
+      print(err + ".............................");
       return null;
     }
   }
