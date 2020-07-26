@@ -41,24 +41,6 @@ class WaitingScreenState extends State<WaitingScreen> {
         LatLng pickup = tripModel.currentTrip.pickupCoords;
         LatLng driverLocation = tripModel.currentTrip.driverCoords;
 
-        Future<List<Polyline>> getPolyline() async {
-          Map result = await PolylineApi.getPolyLines(pickup, driverLocation);
-          List<LatLng> coords = result['polyline'];
-          List<Polyline> line = [
-            Polyline(
-                polylineId: PolylineId("driver distance"),
-                width: 3,
-                points: coords)
-          ];
-          if (line == null) {
-            return getPolyline();
-          }
-          if (line.length == 0) {
-            return getPolyline();
-          }
-          return line;
-        }
-
         return Column(
           children: <Widget>[
             Expanded(
@@ -68,7 +50,6 @@ class WaitingScreenState extends State<WaitingScreen> {
                     firstLocation: pickup,
                     secondLocation: driverLocation,
                     secondLocationMarkerIcon: driverIcon,
-                    getPolyline: () => getPolyline(),
                   ),
                   SafeArea(
                     child: Align(

@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:uber_clone/api/location_math_api.dart';
+import 'package:uber_clone/api/polyline_api.dart';
 
 class DistanceOverview extends StatefulWidget {
   final LatLng firstLocation;
@@ -10,7 +11,6 @@ class DistanceOverview extends StatefulWidget {
   final LatLng secondLocation;
   final InfoWindow secondLocationInfoWindow;
   final VoidCallback onPolylineDrawn;
-  final AsyncValueGetter<List<Polyline>> getPolyline;
   final BitmapDescriptor firstLocationMarkerIcon;
   final BitmapDescriptor secondLocationMarkerIcon;
 
@@ -18,7 +18,6 @@ class DistanceOverview extends StatefulWidget {
       {this.firstLocation,
       this.secondLocation,
       this.onPolylineDrawn,
-      this.getPolyline,
       this.firstLocationInfoWindow,
       this.secondLocationInfoWindow,
       this.firstLocationMarkerIcon,
@@ -32,14 +31,34 @@ class DistanceOverviewState extends State<DistanceOverview> {
   LatLng secondLocation;
   VoidCallback onPolylineDrawn;
   List<Marker> markers = new List();
-  AsyncValueGetter<List<Polyline>> getPolyline;
+  List<Polyline> polyLine;
   BitmapDescriptor firstLocationMarkerIcon;
   BitmapDescriptor secondLocationMarkerIcon;
   GoogleMapController mapController;
   InfoWindow firstLocationInfoWindow;
   InfoWindow secondLocationInfoWindow;
+  StreamSubscription getPolylineStream;
   bool polylineDrawn = false;
   Timer executionTimer;
+
+  Future<List<Polyline>> getPolyline() async {
+    Map result = await PolylineApi.getPolyLines(firstLocation, secondLocation);
+    if (result == null) {
+      return null;
+    }
+    List<LatLng> coords = result['polyline'];
+    List<Polyline> line = [
+      Polyline(
+          polylineId: PolylineId("driver distance"), width: 3, points: coords)
+    ];
+    return line;
+  }
+
+  @override
+  void dispose() {
+    getPolylineStream.cancel();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -58,8 +77,21 @@ class DistanceOverviewState extends State<DistanceOverview> {
         } catch (err) {}
       }
     });
-
-    getPolyline = widget.getPolyline;
+    getPolylineStream = getPolyline().asStream().listen((poly) async {
+      if (poly == null) {
+        while (polyLine == null) {
+          poly = await getPolyline();
+          if (poly != null) {
+            setState(() {
+              polyLine = poly;
+            });
+          }
+        }
+      }
+      setState(() {
+        polyLine = poly;
+      });
+    });
 
     Marker pickupMarker = new Marker(
         markerId: MarkerId("pickupMarker"),
@@ -99,42 +131,35 @@ class DistanceOverviewState extends State<DistanceOverview> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: getPolyline.call(),
-      builder: (context, snap) {
-        if (!snap.hasData) {
-          return Container();
-        }
+    if (polyLine == null) {
+      return Container();
+    }
 
-        if (snap.hasData) {
-          polylineDrawn = true;
-        }
+    polylineDrawn = true;
 
-        return GoogleMap(
-          key: new GlobalKey(),
-          onMapCreated: (controller) {
-            mapController = controller;
-            //delay is necessary to allow map to be completely built first before animating
-            Timer(Duration(seconds: 1), () {
-              focusMapOnBound(controller);
-              if (snap.data.length > 0) {
-                controller.showMarkerInfoWindow(MarkerId("drop"));
-              }
-            });
-          },
-          initialCameraPosition: CameraPosition(
-              target: LatLng(firstLocation.latitude, firstLocation.longitude),
-              zoom: 11.0),
-          compassEnabled: false,
-          trafficEnabled: false,
-          myLocationEnabled: false,
-          zoomControlsEnabled: false,
-          rotateGesturesEnabled: false,
-          mapToolbarEnabled: true,
-          polylines: snap.data.length > 0 ? snap.data.toSet() : null,
-          markers: snap.data.length > 0 ? Set<Marker>.of(markers) : null,
-        );
+    return GoogleMap(
+      key: new GlobalKey(),
+      onMapCreated: (controller) {
+        mapController = controller;
+        //delay is necessary to allow map to be completely built first before animating
+        Timer(Duration(seconds: 1), () {
+          focusMapOnBound(controller);
+          if (polyLine.length > 0) {
+            controller.showMarkerInfoWindow(MarkerId("drop"));
+          }
+        });
       },
+      initialCameraPosition: CameraPosition(
+          target: LatLng(firstLocation.latitude, firstLocation.longitude),
+          zoom: 11.0),
+      compassEnabled: false,
+      trafficEnabled: false,
+      myLocationEnabled: false,
+      zoomControlsEnabled: false,
+      rotateGesturesEnabled: false,
+      mapToolbarEnabled: true,
+      polylines: polyLine.length > 0 ? polyLine.toSet() : null,
+      markers: polyLine.length > 0 ? Set<Marker>.of(markers) : null,
     );
   }
 }
