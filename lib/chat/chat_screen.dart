@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:uber_clone/chat/message_widget.dart';
 import 'package:uber_clone/global/screen_size.dart';
 import 'package:uber_clone/models/auth_model.dart';
+import 'package:uber_clone/models/trip_model.dart';
 
 class ChatScreen extends StatefulWidget {
   @override
@@ -12,11 +14,9 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   TextEditingController messageController = TextEditingController();
   ScrollController scroll = ScrollController();
-  String driverId;
 
   @override
   Widget build(BuildContext context) {
-    driverId = ModalRoute.of(context).settings.arguments;
     return Scaffold(
       backgroundColor: Colors.black12,
       body: Container(
@@ -27,7 +27,6 @@ class _ChatScreenState extends State<ChatScreen> {
           children: <Widget>[
             Container(
               padding: EdgeInsets.only(bottom: 40, top: 40, left: 5, right: 5),
-              height: height(context) * 0.15,
               width: width(context),
               child: Row(
                 mainAxisSize: MainAxisSize.max,
@@ -41,8 +40,22 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                     iconSize: 28,
                     onPressed: () {
-                      Navigator.pop(context);
+                      Navigator.pushReplacementNamed(context, "welcome_page");
                     },
+                  ),
+                  Expanded(
+                    child: Consumer<TripModel>(
+                      builder: (context,tripModel,_){
+                        if(tripModel.currentTrip==null){
+                          return Text("");
+                        }
+                        return Text(tripModel.currentTrip.driverName,style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20
+                        ),);
+                      },
+                    ),
                   )
                 ],
               ),
@@ -61,32 +74,39 @@ class _ChatScreenState extends State<ChatScreen> {
                           topLeft: Radius.circular(24),
                           topRight: Radius.circular(24))),
                   width: width(context),
-                  child: StreamBuilder<QuerySnapshot>(
-                    stream: Firestore.instance
-                        .collection('users')
-                        .document(globalUser.uid)
-                        .collection('messages')
-                        .orderBy('timestamp', descending: false)
-                        .snapshots(),
-                    builder: (BuildContext context, snapshot) {
-                      if (!snapshot.hasData)
-                        return Center(
-                          child: CircularProgressIndicator(),
-                        );
+                  child: Consumer<AuthModel>(
+                    builder: (context, authModel, _) {
+                      if (authModel.user == null) {
+                        return Container();
+                      }
+                      return StreamBuilder<QuerySnapshot>(
+                        stream: Firestore.instance
+                            .collection('users')
+                            .document(authModel.user.uid)
+                            .collection('messages')
+                            .orderBy('timestamp', descending: false)
+                            .snapshots(),
+                        builder: (BuildContext context, snapshot) {
+                          if (!snapshot.hasData)
+                            return Center(
+                              child: CircularProgressIndicator(),
+                            );
 
-                      List<DocumentSnapshot> docs = snapshot.data.documents;
+                          List<DocumentSnapshot> docs = snapshot.data.documents;
 
-                      List<Widget> chatMessages = docs
-                          .map((e) => MessageWidget(
-                                from: e.data['fromName'],
-                                message: e.data['message'],
-                                person: globalUser.uid == e.data['fromId'],
-                              ))
-                          .toList();
+                          List<Widget> chatMessages = docs
+                              .map((e) => MessageWidget(
+                                    from: e.data['fromName'],
+                                    message: e.data['message'],
+                                    person: globalUser.uid == e.data['fromId'],
+                                  ))
+                              .toList();
 
-                      return ListView(
-                        controller: scroll,
-                        children: <Widget>[...chatMessages],
+                          return ListView(
+                            controller: scroll,
+                            children: <Widget>[...chatMessages],
+                          );
+                        },
                       );
                     },
                   ),
@@ -121,17 +141,24 @@ class _ChatScreenState extends State<ChatScreen> {
                                 left: 12, top: 12, bottom: 12, right: 12)),
                       ),
                     ),
-                    FlatButton(
-                      padding: EdgeInsets.symmetric(vertical: 6, horizontal: 6),
-                      color: Colors.black,
-                      shape: CircleBorder(),
-                      child: Icon(
-                        Icons.send,
-                        color: Colors.white,
-                        size: 30,
-                      ),
-                      onPressed: () {
-                        sendMessage();
+                    Consumer<TripModel>(
+                      builder: (context, tripModel, _) {
+                        return FlatButton(
+                          padding:
+                              EdgeInsets.symmetric(vertical: 6, horizontal: 6),
+                          color: Colors.black,
+                          shape: CircleBorder(),
+                          child: Icon(
+                            Icons.send,
+                            color: Colors.white,
+                            size: 30,
+                          ),
+                          onPressed: () {
+                            if (tripModel.currentTrip != null) {
+                              sendMessage(tripModel.currentTrip.driverId);
+                            }
+                          },
+                        );
                       },
                     )
                   ],
@@ -142,8 +169,9 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Future<void> sendMessage() async {
-    if (messageController.text.trim().length > 0) {
+  Future<void> sendMessage(String driverId) async {
+    if (Provider.of<TripModel>(context, listen: false).currentTrip == null) {
+    } else if (messageController.text.trim().length > 0) {
       String message = messageController.text.trim();
       messageController.clear();
       await Firestore.instance
