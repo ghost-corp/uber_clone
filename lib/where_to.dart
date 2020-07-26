@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:uber_clone/api/search_api.dart';
@@ -17,6 +18,7 @@ class _WhereToScreenState extends State<WhereToScreen> {
   TextEditingController controller = new TextEditingController();
   TextEditingController destinationController = new TextEditingController();
   GlobalKey mapKey = new GlobalKey();
+  String mapStyle;
 
   void getSearchResult(BuildContext context, String searchKey) {
     SearchApi.searchPlace(context, searchKey).then((result) {
@@ -24,6 +26,23 @@ class _WhereToScreenState extends State<WhereToScreen> {
         searchResult = result;
       });
     });
+  }
+
+  void getMapStyle() async {
+    String style = await rootBundle.loadString("assets/grey.json");
+    if (mounted) {
+      setState(() {
+        mapStyle = style;
+      });
+    } else {
+      mapStyle = style;
+    }
+  }
+
+  @override
+  void initState() {
+    getMapStyle();
+    super.initState();
   }
 
   @override
@@ -36,22 +55,27 @@ class _WhereToScreenState extends State<WhereToScreen> {
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.height,
           ),
-          GoogleMap(
-            key: mapKey,
-            initialCameraPosition: CameraPosition(
-                target: LatLng(
-                    Provider.of<LocationModel>(context, listen: false)
-                        .currentLocation
-                        .latitude,
-                    Provider.of<LocationModel>(context, listen: false)
-                        .currentLocation
-                        .longitude),
-                zoom: 11.0),
-            compassEnabled: false,
-            trafficEnabled: false,
-            myLocationEnabled: true,
-            zoomControlsEnabled: false,
-          ),
+          mapStyle == null
+              ? Container()
+              : GoogleMap(
+                  key: mapKey,
+                  onMapCreated: (controller) {
+                    controller.setMapStyle(mapStyle);
+                  },
+                  initialCameraPosition: CameraPosition(
+                      target: LatLng(
+                          Provider.of<LocationModel>(context, listen: false)
+                              .currentLocation
+                              .latitude,
+                          Provider.of<LocationModel>(context, listen: false)
+                              .currentLocation
+                              .longitude),
+                      zoom: 12.5),
+                  compassEnabled: false,
+                  trafficEnabled: false,
+                  myLocationEnabled: true,
+                  zoomControlsEnabled: false,
+                ),
           doneButton
               ? Align(
                   alignment: Alignment.bottomCenter,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class MapLocationSelector extends StatefulWidget {
@@ -15,19 +16,36 @@ class MapLocationSelectorState extends State<MapLocationSelector> {
   GoogleMapController mapController;
   LatLng markerLocation;
   Function onCameraMove;
+  String mapStyle;
 
   @override
   void initState() {
     onCameraMove = widget.onCameraMove;
     markerLocation = widget.initialLocation;
+    getMapStyle();
     super.initState();
+  }
+
+  void getMapStyle() async {
+    String style = await rootBundle.loadString("assets/grey_detailed.json");
+    if (mounted) {
+      setState(() {
+        mapStyle = style;
+      });
+    } else {
+      mapStyle = style;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (mapStyle == null) {
+      return Container();
+    }
     return GoogleMap(
       onMapCreated: (GoogleMapController controller) {
         mapController = controller;
+        mapController.setMapStyle(mapStyle);
       },
       initialCameraPosition: CameraPosition(
           target: LatLng(markerLocation.latitude, markerLocation.longitude),

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:uber_clone/api/location_math_api.dart';
 import 'package:uber_clone/api/polyline_api.dart';
@@ -40,6 +41,7 @@ class DistanceOverviewState extends State<DistanceOverview> {
   StreamSubscription getPolylineStream;
   bool polylineDrawn = false;
   Timer executionTimer;
+  String mapStyle;
 
   Future<List<Polyline>> getPolyline() async {
     Map result = await PolylineApi.getPolyLines(firstLocation, secondLocation);
@@ -52,6 +54,17 @@ class DistanceOverviewState extends State<DistanceOverview> {
           polylineId: PolylineId("driver distance"), width: 3, points: coords)
     ];
     return line;
+  }
+
+  void getMapStyle() async {
+    String style = await rootBundle.loadString("assets/grey.json");
+    if (mounted) {
+      setState(() {
+        mapStyle = style;
+      });
+    } else {
+      mapStyle = style;
+    }
   }
 
   @override
@@ -69,6 +82,7 @@ class DistanceOverviewState extends State<DistanceOverview> {
     onPolylineDrawn = widget.onPolylineDrawn;
     firstLocationMarkerIcon = widget.firstLocationMarkerIcon;
     secondLocationMarkerIcon = widget.secondLocationMarkerIcon;
+    getMapStyle();
     executionTimer = Timer.periodic(Duration(seconds: 1), (timer) {
       if (polylineDrawn == true) {
         try {
@@ -137,11 +151,15 @@ class DistanceOverviewState extends State<DistanceOverview> {
 
     polylineDrawn = true;
 
+    if (mapStyle == null) {
+      return Container();
+    }
+
     return GoogleMap(
       key: new GlobalKey(),
       onMapCreated: (controller) {
         mapController = controller;
-        //delay is necessary to allow map to be completely built first before animating
+        controller.setMapStyle(mapStyle);
         Timer(Duration(seconds: 1), () {
           focusMapOnBound(controller);
           if (polyLine.length > 0) {
