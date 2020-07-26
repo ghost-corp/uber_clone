@@ -14,7 +14,6 @@ class PolylineApi {
     Map<String, dynamic> result = new Map();
     try {
       poly.Polyline polyline;
-      print("here.....................");
       var response;
       try {
         response = await http.get(
@@ -27,6 +26,11 @@ class PolylineApi {
       if (response.statusCode == 200) {
         print(response.body);
         print(json.decode(response.body));
+        if (json.decode(response.body)['status'] == "ZERO_RESULTS") {
+          result.putIfAbsent("polyline", () => <LatLng>[]);
+          result.putIfAbsent("steps", () => <Step>[]);
+          return result;
+        }
         polyline = poly.Polyline.Decode(
             precision: 5,
             encodedString: json.decode(response.body)['routes'][0]
@@ -41,14 +45,11 @@ class PolylineApi {
           steps.add(Step.fromJson(stepsTemp[x]));
         }
         result.putIfAbsent("steps", () => steps);
-        print("returning map..............");
         return result;
       } else {
-        print("failed..........................");
         return null;
       }
     } catch (err) {
-      print(err + ".............................");
       return null;
     }
   }

@@ -86,6 +86,8 @@ class Place {
     return Place(
         formattedAddress: json['formatted_address'],
         name: json['name'],
+        latitude: json['latitude'],
+        longitude: json["longitude"],
         placeId: json['place_id']);
   }
 }

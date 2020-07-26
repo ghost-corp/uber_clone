@@ -25,6 +25,33 @@ class _SearchDestinationState extends State<SearchDestination> {
 
   @override
   Widget build(BuildContext context) {
+    List<Widget> searchResultWidgets = new List();
+    if (searchResult != null) {
+      searchResult.forEach((result) {
+        searchResultWidgets.add(InkWell(
+          onTap: () {
+            setState(() {
+              finalPlace = result;
+              doneButton = true;
+            });
+            controller.clear();
+            controller.text = finalPlace.name;
+            FocusScope.of(context).requestFocus(new FocusNode());
+          },
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                title: Text(result.formattedAddress),
+                subtitle: Text(result.name),
+                leading: Icon(Icons.location_on),
+              ),
+              Divider(),
+            ],
+          ),
+        ));
+      });
+    }
     return Stack(
       children: <Widget>[
         Container(
@@ -74,37 +101,15 @@ class _SearchDestinationState extends State<SearchDestination> {
                   ? Container()
                   : searchResult.length > 0
                       ? Container(
-                          height: height(context) * 0.4,
                           width: width(context),
-                          child: ListView.builder(
-                            itemCount: searchResult.length,
-                            itemBuilder: (context, count) {
-                              return InkWell(
-                                onTap: () {
-                                  setState(() {
-                                    finalPlace = searchResult[0];
-                                    doneButton = true;
-                                  });
-                                  controller.clear();
-                                  controller.text = finalPlace.name;
-                                  FocusScope.of(context)
-                                      .requestFocus(new FocusNode());
-                                },
-                                child: Column(
+                          child: searchResultWidgets.length <= 5
+                              ? Column(
                                   mainAxisSize: MainAxisSize.min,
-                                  children: <Widget>[
-                                    ListTile(
-                                      title: Text(
-                                          searchResult[count].formattedAddress),
-                                      subtitle: Text(searchResult[count].name),
-                                      leading: Icon(Icons.add_location),
-                                    ),
-                                    Divider()
-                                  ],
+                                  children: <Widget>[...searchResultWidgets],
+                                )
+                              : ListView(
+                                  children: <Widget>[...searchResultWidgets],
                                 ),
-                              );
-                            },
-                          ),
                         )
                       : Container(),
               ListTile(

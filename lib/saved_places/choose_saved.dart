@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uber_clone/api/search_api.dart';
 import 'package:uber_clone/models/auth_model.dart';
+import 'package:uber_clone/models/location_model.dart';
 
 class ChooseSavedDestination extends StatefulWidget {
   @override
@@ -69,14 +70,22 @@ class _ChooseSavedDestinationState extends State<ChooseSavedDestination> {
           });
 
           placeWidget = places
-              .map((e) => Column(
-                    children: <Widget>[
-                      ListTile(
-                        title: Text(e.formattedAddress),
-                        subtitle: Text(e.name),
-                      ),
-                      Divider()
-                    ],
+              .map((e) => GestureDetector(
+                    onTap: () {
+                      Provider.of<LocationModel>(context, listen: false)
+                          .setDropOffLocationInfo(e);
+                      Navigator.of(context).pushNamed("pickup_location");
+                    },
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        ListTile(
+                          title: Text(e.formattedAddress),
+                          subtitle: Text(e.name),
+                        ),
+                        Divider()
+                      ],
+                    ),
                   ))
               .toList();
 
