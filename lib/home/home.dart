@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:uber_clone/confirm_screen.dart';
@@ -55,11 +56,24 @@ class HomeBodyState extends State<HomeBody> {
   GlobalKey mapKey = new GlobalKey();
   BitmapDescriptor driverIcon;
   int buildCount = 0;
+  String mapStyle;
 
   @override
   void initState() {
     scaffoldKey = widget.scaffoldKey;
+    getMapStyle();
     super.initState();
+  }
+
+  void getMapStyle() async {
+    String style = await rootBundle.loadString("assets/grey.json");
+    if (mounted) {
+      setState(() {
+        mapStyle = style;
+      });
+    } else {
+      mapStyle = style;
+    }
   }
 
   void initializeMarkerIcons() {
@@ -113,7 +127,7 @@ class HomeBodyState extends State<HomeBody> {
                         strokeColor: Color(0x262196F3),
                         fillColor: Color(0x262196F3),
                         strokeWidth: 0,
-                        radius: 6000,
+                        radius: 4000,
                         center: LatLng(locationModel.currentLocation.latitude,
                             locationModel.currentLocation.longitude),
                         onTap: () {});
@@ -128,15 +142,20 @@ class HomeBodyState extends State<HomeBody> {
                         icon: driverIcon));
                   }
 
+                  if (mapStyle == null) {
+                    return Container();
+                  }
+
                   return GoogleMap(
                     key: mapKey,
                     onMapCreated: (GoogleMapController controller) {
                       mapController = controller;
+                      mapController.setMapStyle(mapStyle);
                     },
                     initialCameraPosition: CameraPosition(
                         target: LatLng(locationModel.currentLocation.latitude,
                             locationModel.currentLocation.longitude),
-                        zoom: 12.0),
+                        zoom: 12.5),
                     myLocationEnabled: true,
                     myLocationButtonEnabled: true,
                     zoomControlsEnabled: false,
