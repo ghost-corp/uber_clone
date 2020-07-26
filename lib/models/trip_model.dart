@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:uber_clone/models/auth_model.dart';
@@ -8,27 +9,38 @@ class TripModel extends ChangeNotifier {
   StreamSubscription currentTripStream;
   Trip currentTrip;
   bool connectToDriver = false;
+  StreamSubscription authStateStream;
 
   TripModel() {
-    currentTripStream = Firestore.instance
-        .collection('users')
-        .document(globalUser.uid)
-        .collection('currentTrip')
-        .document('tripDetails')
-        .snapshots()
-        .listen((tripSnapshot) {
-      if (tripSnapshot.data == null) {
-        currentTrip = null;
-      } else {
-        connectToDriver = false;
-        currentTrip = Trip.fromJson(tripSnapshot.data);
+    authStateStream = FirebaseAuth.instance.onAuthStateChanged.listen((user) {
+      globalUser = user;
+      try {
+        if (user != null) {
+          currentTripStream = Firestore.instance
+              .collection('users')
+              .document(user.uid)
+              .collection('currentTrip')
+              .document('tripDetails')
+              .snapshots()
+              .listen((tripSnapshot) {
+            if (tripSnapshot.data == null) {
+              currentTrip = null;
+            } else {
+              connectToDriver = false;
+              currentTrip = Trip.fromJson(tripSnapshot.data);
+            }
+            notifyListeners();
+          });
+        }
+      } catch (err) {
+        print(err);
       }
-      notifyListeners();
     });
   }
 
   void cancelSubs() {
     currentTripStream.cancel();
+    authStateStream.cancel();
   }
 
   void setConnectingToDriver(bool value) {
