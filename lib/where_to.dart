@@ -223,7 +223,12 @@ class _WhereToScreenState extends State<WhereToScreen> {
                                 child: Consumer<LocationModel>(
                                   builder: (context, locationModel, _) {
                                     controller.text = locationModel
-                                        .currentLocationInfo.formattedAddress;
+                                                .currentLocationInfo
+                                                .formattedAddress !=
+                                            ""
+                                        ? locationModel.currentLocationInfo
+                                            .formattedAddress
+                                        : "Unknown Road";
                                     return TextField(
                                       controller: controller,
                                       onTap: () {
